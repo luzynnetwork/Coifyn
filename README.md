@@ -40,3 +40,4 @@ Room created 2026-09-07. Nothing built yet.
 `coifyn.com` was unregistered and no existing software/company used the name at the time of
 selection (checked 2026-09-07 via Verisign RDAP + web search). **This is not trademark
 clearance** — run a USPTO/IPO search before any public use.
+"# Coifyn" 
