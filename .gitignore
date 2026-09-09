@@ -1,0 +1,53 @@
+# Root ignore rules for the Coifyn monorepo.
+# Docs are intentionally NOT ignored — phases/, *.md, ONE-PAGER.md, STITCH-PROMPT.md
+# are all committed.
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Turborepo
+.turbo/
+
+# Caches / coverage
+.cache/
+.eslintcache
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.pem
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Local generated artifacts (keep the source .md, ignore exported copies)
+*.docx.tmp
+~$*.docx
+
+
+Material/
