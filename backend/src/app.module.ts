@@ -4,6 +4,7 @@ import { AppConfigModule } from './config/config.module.js';
 import { AppConfigService } from './config/config.service.js';
 import { DatabaseModule } from './persistence/database.module.js';
 import { HealthModule } from './health/health.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 /**
  * Phase 0 slice wiring. Feature modules (auth, rbac, tenancy, events, audit, and
@@ -35,6 +36,7 @@ import { HealthModule } from './health/health.module.js';
     }),
     DatabaseModule,
     HealthModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
