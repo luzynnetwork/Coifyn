@@ -1,11 +1,9 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module.js';
 import { AppConfigService } from './config/config.service.js';
-import { ProblemJsonFilter } from './common/filters/problem-json.filter.js';
-import { IdempotencyInterceptor } from './common/idempotency/idempotency.interceptor.js';
+import { configureApp } from './app.setup.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -13,13 +11,7 @@ async function bootstrap() {
 
   const config = app.get(AppConfigService);
 
-  app.setGlobalPrefix('api', { exclude: ['health', 'health/ready'] });
-  app.enableVersioning();
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, transform: true }),
-  );
-  app.useGlobalFilters(new ProblemJsonFilter());
-  app.useGlobalInterceptors(app.get(IdempotencyInterceptor));
+  configureApp(app);
   app.enableShutdownHooks();
 
   const swagger = new DocumentBuilder()
