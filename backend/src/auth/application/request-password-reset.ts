@@ -1,5 +1,6 @@
 import { createHash, randomInt } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { PasswordResetsRepo } from '../data/password-resets.repo.js';
 import { UsersRepo } from '../data/users.repo.js';
@@ -22,6 +23,7 @@ export class RequestPasswordReset {
     private readonly database: DatabaseService,
     private readonly users: UsersRepo,
     private readonly resets: PasswordResetsRepo,
+    private readonly events: EventBus,
   ) {}
 
   async execute(dto: ForgotPasswordDto): Promise<void> {
@@ -35,6 +37,13 @@ export class RequestPasswordReset {
         userId: user.id,
         codeHash: hashCode(code),
         expiresAt: new Date(Date.now() + CODE_TTL_MS),
+      });
+
+      await this.events.emit({
+        aggregateType: 'user',
+        aggregateId: user.id,
+        type: 'PasswordResetRequested',
+        payload: { userId: user.id },
       });
 
       // TODO(notifications phase): send this by email instead of logging.

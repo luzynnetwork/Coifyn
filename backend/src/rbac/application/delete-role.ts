@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../auth/auth-user.js';
 import { AuditWriter } from '../../audit/audit-writer.js';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { MembershipsRepo } from '../data/memberships.repo.js';
 import { RolesRepo } from '../data/roles.repo.js';
@@ -21,6 +22,7 @@ export class DeleteRole {
     private readonly roles: RolesRepo,
     private readonly memberships: MembershipsRepo,
     private readonly audit: AuditWriter,
+    private readonly events: EventBus,
   ) {}
 
   async execute(user: AuthUser, roleId: string): Promise<void> {
@@ -43,6 +45,13 @@ export class DeleteRole {
       }
 
       await this.roles.delete(salonId, roleId);
+      await this.events.emit({
+        aggregateType: 'role',
+        aggregateId: roleId,
+        type: 'RoleDeleted',
+        salonId,
+        payload: { name: role.name },
+      });
       await this.audit.write({
         salonId,
         actor: user,

@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { UsersRepo } from '../data/users.repo.js';
 import { PasswordService } from '../lib/password.js';
@@ -18,6 +19,7 @@ export class Register {
     private readonly users: UsersRepo,
     private readonly passwords: PasswordService,
     private readonly issueSession: IssueSession,
+    private readonly events: EventBus,
   ) {}
 
   async execute(
@@ -39,6 +41,12 @@ export class Register {
         displayName: dto.displayName,
       });
       const tokens = await this.issueSession.forNewSession(user, ctx);
+      await this.events.emit({
+        aggregateType: 'user',
+        aggregateId: user.id,
+        type: 'UserRegistered',
+        payload: { email: user.email },
+      });
       return { userId: user.id, tokens };
     });
   }

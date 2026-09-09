@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { PasswordResetsRepo } from '../data/password-resets.repo.js';
 import { SessionsRepo } from '../data/sessions.repo.js';
@@ -20,6 +21,7 @@ export class ResetPassword {
     private readonly resets: PasswordResetsRepo,
     private readonly sessions: SessionsRepo,
     private readonly passwords: PasswordService,
+    private readonly events: EventBus,
   ) {}
 
   async execute(dto: ResetPasswordDto): Promise<void> {
@@ -36,6 +38,12 @@ export class ResetPassword {
       );
       await this.resets.invalidateAllForUser(user.id);
       await this.sessions.revokeAllForUser(user.id);
+      await this.events.emit({
+        aggregateType: 'user',
+        aggregateId: user.id,
+        type: 'PasswordResetCompleted',
+        payload: { userId: user.id },
+      });
     });
   }
 }

@@ -3,6 +3,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './config/config.module.js';
 import { AppConfigService } from './config/config.service.js';
 import { DatabaseModule } from './persistence/database.module.js';
+import { RedisModule } from './redis/redis.module.js';
 import { HealthModule } from './health/health.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { EventsModule } from './events/events.module.js';
@@ -39,6 +40,7 @@ import { TenancyModule } from './tenancy/tenancy.module.js';
       }),
     }),
     DatabaseModule,
+    RedisModule,
     EventsModule,
     AuditModule,
     HealthModule,

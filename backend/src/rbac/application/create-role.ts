@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../auth/auth-user.js';
 import { AuditWriter } from '../../audit/audit-writer.js';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { RolesRepo } from '../data/roles.repo.js';
 import { isPermissionKey, isScopable } from '../permission-catalog.js';
@@ -20,6 +21,7 @@ export class CreateRole {
     private readonly authorize: Authorize,
     private readonly roles: RolesRepo,
     private readonly audit: AuditWriter,
+    private readonly events: EventBus,
   ) {}
 
   async execute(user: AuthUser, dto: CreateRoleDto): Promise<{ id: string }> {
@@ -40,6 +42,13 @@ export class CreateRole {
         grants: dto.grants,
       });
 
+      await this.events.emit({
+        aggregateType: 'role',
+        aggregateId: id,
+        type: 'RoleCreated',
+        salonId,
+        payload: { name: dto.name },
+      });
       await this.audit.write({
         salonId,
         actor: user,

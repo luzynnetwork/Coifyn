@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../auth/auth-user.js';
 import { AuditWriter } from '../../audit/audit-writer.js';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { MembershipsRepo } from '../data/memberships.repo.js';
 import { RolesRepo } from '../data/roles.repo.js';
@@ -26,6 +27,7 @@ export class AssignRole {
     private readonly roles: RolesRepo,
     private readonly memberships: MembershipsRepo,
     private readonly audit: AuditWriter,
+    private readonly events: EventBus,
   ) {}
 
   async execute(
@@ -68,6 +70,13 @@ export class AssignRole {
       }
 
       await this.memberships.setRole(salonId, targetUserId, roleId);
+      await this.events.emit({
+        aggregateType: 'membership',
+        aggregateId: targetUserId,
+        type: 'RoleAssigned',
+        salonId,
+        payload: { targetUserId, roleId },
+      });
       await this.audit.write({
         salonId,
         actor: user,

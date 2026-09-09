@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../auth/auth-user.js';
 import { AuditWriter } from '../../audit/audit-writer.js';
+import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { RolesRepo } from '../data/roles.repo.js';
 import type { UpdateRoleDto } from '../dto/role.dto.js';
@@ -21,6 +22,7 @@ export class UpdateRole {
     private readonly authorize: Authorize,
     private readonly roles: RolesRepo,
     private readonly audit: AuditWriter,
+    private readonly events: EventBus,
   ) {}
 
   async execute(
@@ -50,6 +52,13 @@ export class UpdateRole {
         await this.roles.replaceGrants(salonId, roleId, dto.grants);
       }
 
+      await this.events.emit({
+        aggregateType: 'role',
+        aggregateId: roleId,
+        type: 'RoleUpdated',
+        salonId,
+        payload: { changed: dto.grants ? ['grants'] : ['name'] },
+      });
       await this.audit.write({
         salonId,
         actor: user,
