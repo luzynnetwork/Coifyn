@@ -5,8 +5,10 @@ import { AppConfigService } from './config/config.service.js';
 import { DatabaseModule } from './persistence/database.module.js';
 import { HealthModule } from './health/health.module.js';
 import { AuditModule } from './audit/audit.module.js';
+import { EventsModule } from './events/events.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { RbacModule } from './rbac/rbac.module.js';
+import { TenancyModule } from './tenancy/tenancy.module.js';
 
 /**
  * Phase 0 slice wiring. Feature modules (auth, rbac, tenancy, events, audit, and
@@ -37,10 +39,12 @@ import { RbacModule } from './rbac/rbac.module.js';
       }),
     }),
     DatabaseModule,
+    EventsModule,
     AuditModule,
     HealthModule,
     AuthModule,
     RbacModule,
+    TenancyModule,
   ],
 })
 export class AppModule {}
