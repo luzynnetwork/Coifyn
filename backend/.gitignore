@@ -3,50 +3,48 @@ node_modules/
 .pnp
 .pnp.*
 
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
 # Env
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 !.env.example
 
-# Next.js
-.next/
-out/
-
-# Build output
-build/
-dist/
-*.tsbuildinfo
-next-env.d.ts
-
-# Turborepo
-.turbo/
-
-# Vercel
-.vercel
-
-# Test / coverage
-coverage/
-
-# Caches
-.cache/
-.eslintcache
-
 # Logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Caches
+.cache/
+.turbo/
+.temp/
+.tmp/
+
+# Runtime
+pids/
+*.pid
+*.seed
+*.pid.lock
+
 # OS / editor
 .DS_Store
 Thumbs.db
-*.pem
 .idea/
 .vscode/*
 !.vscode/settings.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Diagnostics
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
