@@ -7,6 +7,7 @@ import { RedisModule } from './redis/redis.module.js';
 import { HealthModule } from './health/health.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { EventsModule } from './events/events.module.js';
+import { IdempotencyModule } from './common/idempotency/idempotency.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { RbacModule } from './rbac/rbac.module.js';
 import { TenancyModule } from './tenancy/tenancy.module.js';
@@ -42,6 +43,7 @@ import { TenancyModule } from './tenancy/tenancy.module.js';
     DatabaseModule,
     RedisModule,
     EventsModule,
+    IdempotencyModule,
     AuditModule,
     HealthModule,
     AuthModule,
