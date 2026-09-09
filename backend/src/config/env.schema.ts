@@ -14,9 +14,20 @@ export const envSchema = z.object({
     .default('development'),
   PORT: z.coerce.number().int().positive().default(4000),
 
-  /** Postgres connection string. The app connects as a restricted role — see
-   *  persistence/database.service.ts. Provided by the operator; never committed. */
-  DATABASE_URL: z.string().url().startsWith('postgres'),
+  /**
+   * Database connection. Two mutually exclusive modes (persistence/connection.ts):
+   *   - plain:    DATABASE_URL=postgres://user:pass@host/db
+   *   - RDS IAM:  DB_IAM_AUTH=true + DB_HOST/DB_PORT/DB_NAME/DB_USER/AWS_REGION
+   *              (password is a short-lived IAM auth token fetched per connection)
+   * The cross-field check below enforces that one of the two is fully provided.
+   */
+  DATABASE_URL: z.string().startsWith('postgres').optional(),
+  DB_IAM_AUTH: z.enum(['true', 'false']).default('false'),
+  DB_HOST: z.string().optional(),
+  DB_PORT: z.coerce.number().int().positive().default(5432),
+  DB_NAME: z.string().optional(),
+  DB_USER: z.string().optional(),
+  AWS_REGION: z.string().optional(),
 
   /** JWT signing secrets (access + refresh are signed separately so a leaked
    *  access secret cannot mint refresh tokens). */
@@ -35,6 +46,24 @@ export const envSchema = z.object({
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
     .default('info'),
+}).superRefine((env, ctx) => {
+  if (env.DB_IAM_AUTH === 'true') {
+    for (const key of ['DB_HOST', 'DB_NAME', 'DB_USER', 'AWS_REGION'] as const) {
+      if (!env[key]) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key],
+          message: `required when DB_IAM_AUTH="true"`,
+        });
+      }
+    }
+  } else if (!env.DATABASE_URL) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['DATABASE_URL'],
+      message: 'required unless DB_IAM_AUTH="true"',
+    });
+  }
 });
 
 export type Env = z.infer<typeof envSchema>;

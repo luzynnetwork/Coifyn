@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
+import { resolveConnection } from './connection.js';
 
 /**
  * `npm run db:migrate`. Two steps, in order:
@@ -11,14 +12,12 @@ import postgres from 'postgres';
  *   2. the hand-written policy/trigger SQL in ./drizzle/manual (idempotent —
  *      guarded with IF NOT EXISTS / CREATE OR REPLACE)
  *
- * Runs as the OWNING role (DATABASE_URL), not the restricted coifyn_app role —
- * creating roles and policies needs ownership.
+ * Runs as whatever identity the env points at (DATABASE_URL or RDS IAM). That
+ * must be an OWNING role — creating roles and policies needs ownership.
  */
 async function main() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error('DATABASE_URL is not set');
-
-  const sql = postgres(url, { max: 1 });
+  const conn = await resolveConnection(process.env, { max: 1 });
+  const sql = conn.url ? postgres(conn.url, conn.options) : postgres(conn.options);
   const db = drizzle(sql);
 
   console.log('→ applying generated migrations');

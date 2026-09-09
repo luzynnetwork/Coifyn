@@ -9,6 +9,7 @@ import { sql } from 'drizzle-orm';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { AppConfigService } from '../config/config.service.js';
+import { resolveConnection } from './connection.js';
 import {
   CURRENT_SALON_GUC,
   CURRENT_USER_GUC,
@@ -45,12 +46,22 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private readonly config: AppConfigService) {}
 
-  onModuleInit(): void {
-    this.sql = postgres(this.config.get('DATABASE_URL'), {
-      max: 10,
-      prepare: false, // PgBouncer transaction mode
-      onnotice: () => {},
-    });
+  async onModuleInit(): Promise<void> {
+    const conn = await resolveConnection(
+      {
+        DATABASE_URL: this.config.get('DATABASE_URL'),
+        DB_IAM_AUTH: this.config.get('DB_IAM_AUTH'),
+        DB_HOST: this.config.get('DB_HOST'),
+        DB_PORT: String(this.config.get('DB_PORT')),
+        DB_NAME: this.config.get('DB_NAME'),
+        DB_USER: this.config.get('DB_USER'),
+        AWS_REGION: this.config.get('AWS_REGION'),
+      },
+      { max: 10, onnotice: () => {} },
+    );
+    this.sql = conn.url
+      ? postgres(conn.url, conn.options)
+      : postgres(conn.options);
     this.root = drizzle(this.sql, { schema });
   }
 
