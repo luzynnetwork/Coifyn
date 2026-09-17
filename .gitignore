@@ -38,6 +38,9 @@ pnpm-debug.log*
 # Claude Code agent runtime artifacts (worktrees, etc.)
 .claude/worktrees/
 
+# Local command reference (keep in each dev's local checkout only)
+commands.sh
+
 # OS / editor
 .DS_Store
 Thumbs.db
