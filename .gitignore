@@ -35,6 +35,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Claude Code agent runtime artifacts (worktrees, etc.)
+.claude/worktrees/
+
 # OS / editor
 .DS_Store
 Thumbs.db

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -23,6 +24,9 @@ const SUPERUSER =
 
 const DB_NAME = `coifyn_e2e_${Date.now().toString(36)}`;
 const APP_ROLE = `${DB_NAME}_app`;
+// scram-sha-256 (the default auth method once POSTGRES_PASSWORD is set, both
+// locally and in the CI service container) rejects a passwordless role.
+const APP_ROLE_PASSWORD = randomUUID();
 
 export async function setup() {
   let root: postgres.Sql;
@@ -47,12 +51,14 @@ export async function setup() {
     .sort()) {
     await admin.unsafe(await readFile(join(manualDir, file), 'utf8'));
   }
-  await admin.unsafe(`CREATE ROLE "${APP_ROLE}" LOGIN`);
+  await admin.unsafe(
+    `CREATE ROLE "${APP_ROLE}" LOGIN PASSWORD '${APP_ROLE_PASSWORD}'`,
+  );
   await admin.unsafe(`GRANT coifyn_app TO "${APP_ROLE}"`);
   await admin.end();
   await root.end();
 
-  process.env.DATABASE_URL = appUrl(DB_NAME, APP_ROLE);
+  process.env.DATABASE_URL = appUrl(DB_NAME, APP_ROLE, APP_ROLE_PASSWORD);
   process.env.DB_IAM_AUTH = 'false';
   process.env.E2E_ADMIN_URL = superOnDb;
   process.env.NODE_ENV = 'test';
@@ -72,10 +78,10 @@ export async function setup() {
   };
 }
 
-function appUrl(db: string, role: string): string {
+function appUrl(db: string, role: string, password: string): string {
   const u = new URL(replaceDb(SUPERUSER, db));
   u.username = role;
-  u.password = '';
+  u.password = password;
   return u.toString();
 }
 function replaceDb(url: string, db: string): string {
