@@ -1,0 +1,10 @@
+{
+  "extends": "@coifyn/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

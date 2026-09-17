@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: coifyn
+      POSTGRES_PASSWORD: coifyn
+      POSTGRES_DB: coifyn
+    ports:
+      - '5432:5432'
+    volumes:
+      - coifyn-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U coifyn -d coifyn']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - coifyn-redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: quay.io/minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: coifyn
+      MINIO_ROOT_PASSWORD: coifyn123
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # console
+    volumes:
+      - coifyn-minio:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # web UI
+
+volumes:
+  coifyn-postgres:
+  coifyn-redis:
+  coifyn-minio:

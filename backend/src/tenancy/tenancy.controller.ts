@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { EntitlementGuard } from '../rbac/guards/entitlement.guard.js';
 import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { AuthUser } from '../auth/auth-user.js';
 import { CreateSalonDto } from './dto/onboarding.dto.js';
@@ -70,7 +71,10 @@ export class TenancyController {
   }
 
   // ── Branches ──────────────────────────────────────────────────────────────
+  // EntitlementGuard is a Phase 0 stub (always allows) applied here as a
+  // non-breaking example of pairing it with JwtAuthGuard on a staff-facing route.
   @Get('branches')
+  @UseGuards(JwtAuthGuard, EntitlementGuard)
   branches(@CurrentUser() user: AuthUser) {
     return this.listBranches.execute(user);
   }

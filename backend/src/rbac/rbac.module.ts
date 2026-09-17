@@ -17,6 +17,7 @@ import { DeleteRole } from './application/delete-role.js';
 import { ListMembers } from './application/list-members.js';
 import { AssignRole } from './application/assign-role.js';
 import { SetBranchMemberships } from './application/set-branch-memberships.js';
+import { EntitlementGuard } from './guards/entitlement.guard.js';
 
 /**
  * RBAC — permissions are data. Exports the pieces feature modules need:
@@ -43,6 +44,7 @@ import { SetBranchMemberships } from './application/set-branch-memberships.js';
     ListMembers,
     AssignRole,
     SetBranchMemberships,
+    EntitlementGuard,
   ],
   exports: [
     Authorize,
@@ -51,6 +53,7 @@ import { SetBranchMemberships } from './application/set-branch-memberships.js';
     RolesRepo,
     MembershipsRepo,
     BranchMembershipsRepo,
+    EntitlementGuard,
   ],
 })
 export class RbacModule {}

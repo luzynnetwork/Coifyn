@@ -9,8 +9,12 @@ import { AuditModule } from './audit/audit.module.js';
 import { EventsModule } from './events/events.module.js';
 import { IdempotencyModule } from './common/idempotency/idempotency.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { CustomerAuthModule } from './customer-auth/customer-auth.module.js';
 import { RbacModule } from './rbac/rbac.module.js';
 import { TenancyModule } from './tenancy/tenancy.module.js';
+import { RealtimeModule } from './realtime/realtime.module.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
+import { ProvidersModule } from './providers/providers.module.js';
 
 /**
  * Phase 0 slice wiring. Feature modules (auth, rbac, tenancy, events, audit, and
@@ -47,8 +51,12 @@ import { TenancyModule } from './tenancy/tenancy.module.js';
     AuditModule,
     HealthModule,
     AuthModule,
+    CustomerAuthModule,
     RbacModule,
     TenancyModule,
+    ProvidersModule,
+    RealtimeModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

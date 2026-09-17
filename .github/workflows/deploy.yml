@@ -1,0 +1,135 @@
+# Deploy — build the API image, push it, then roll it out to ECS Fargate.
+#
+# Trigger choice: `workflow_run` on ci.yml completing on `main`, rather than a
+# single combined workflow with dependent jobs. Reasoning: ci.yml already runs
+# on `pull_request` as its own workflow (so PR checks stay a single, easily
+# re-runnable status check independent of deploy concerns); chaining via
+# workflow_run keeps "did CI pass on main" as the sole gate for deploy without
+# duplicating the whole test matrix inside this file or making deploy.yml
+# itself listen to pull_request events it has no business reacting to.
+#
+# INERT BY DESIGN: every job below will fail at the "configure AWS
+# credentials" step until the human sets up OIDC roles + secrets. See
+# .github/workflows/README.md for the full checklist. Nothing here runs
+# without that setup, and this workflow was never run against real infra by
+# the agent that wrote it.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types: [completed]
+
+# Registry is parameterized via a repo variable so it's easy to swap (e.g. to
+# ECR) without editing this file. Defaults to GitHub Container Registry.
+env:
+  REGISTRY: ${{ vars.CONTAINER_REGISTRY || 'ghcr.io' }}
+  IMAGE_NAME: ${{ github.repository }}/api
+
+jobs:
+  build-and-push:
+    name: build-and-push (API image)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Log in to registry (ghcr.io, using built-in GITHUB_TOKEN)
+        if: env.REGISTRY == 'ghcr.io'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Swap-in for a non-ghcr registry (e.g. ECR): uncomment and remove the
+      # ghcr.io login step above.
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_STAGING_DEPLOY_ROLE_ARN }}
+      #     aws-region: ${{ vars.AWS_REGION }}
+      # - name: Log in to ECR
+      #   uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: docker/setup-buildx-action@v3
+
+      - id: meta
+        name: Resolve image tag
+        run: |
+          TAG="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }}"
+          echo "image=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    name: deploy-staging (ECS)
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      id-token: write # required for OIDC
+      contents: read
+    steps:
+      - name: Configure AWS credentials (OIDC — no static keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_STAGING_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Names must match what terraform/modules/ecs provisions for staging
+      # (see terraform/environments/staging/*.tfvars — cluster/service naming
+      # convention: coifyn-<env>-api).
+      - name: Force new deployment on ECS staging service
+        run: |
+          aws ecs update-service \
+            --cluster coifyn-staging \
+            --service coifyn-staging-api \
+            --force-new-deployment
+
+  deploy-production:
+    name: deploy-production (ECS)
+    needs: [build-and-push, deploy-staging]
+    runs-on: ubuntu-latest
+    # `environment: production` is what makes this job wait for manual
+    # approval — but ONLY once the human configures required reviewers on the
+    # "production" GitHub Environment under Repo Settings → Environments. That
+    # protection rule is a repo-settings feature; it cannot be declared in
+    # this YAML file. Until it's configured, this job runs unattended as soon
+    # as deploy-staging succeeds — set up the protection rule before relying
+    # on this gate.
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials (OIDC — no static keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_PRODUCTION_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Force new deployment on ECS production service
+        run: |
+          aws ecs update-service \
+            --cluster coifyn-production \
+            --service coifyn-production-api \
+            --force-new-deployment

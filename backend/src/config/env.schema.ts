@@ -46,6 +46,46 @@ export const envSchema = z.object({
   LOG_LEVEL: z
     .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
     .default('info'),
+
+  /** Customer-portal JWT secrets. Separate from the staff JWT_* secrets above so
+   *  a customer token can never authenticate a staff route. Optional so a
+   *  customer-auth-free deploy doesn't need them; customer-auth's own module
+   *  fails fast if it starts without them. */
+  CUSTOMER_JWT_ACCESS_SECRET: z.string().min(32).optional(),
+  CUSTOMER_JWT_REFRESH_SECRET: z.string().min(32).optional(),
+  CUSTOMER_JWT_ACCESS_TTL: z.string().default('15m'),
+  CUSTOMER_JWT_REFRESH_TTL: z.string().default('30d'),
+
+  /** Object storage (S3-compatible — MinIO locally). Optional: ObjectStore
+   *  provider falls back to a not-configured stub when unset. */
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_REGION: z.string().default('us-east-1'),
+  S3_BUCKET: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_FORCE_PATH_STYLE: z.enum(['true', 'false']).default('false'),
+
+  /** Mail (Mailpit locally). Optional: NotificationProvider falls back to the
+   *  console provider when unset. */
+  MAIL_HOST: z.string().optional(),
+  MAIL_PORT: z.coerce.number().int().positive().optional(),
+  MAIL_FROM: z.string().optional(),
+  MAIL_SECURE: z.enum(['true', 'false']).default('false'),
+  MAIL_USER: z.string().optional(),
+  MAIL_PASSWORD: z.string().optional(),
+
+  /** Stripe test-mode secret key. Unset → NoopPaymentProvider is used. */
+  STRIPE_SECRET_KEY: z.string().optional(),
+
+  /** Twilio — stub provider only, throws "not implemented" until a later phase. */
+  TWILIO_ACCOUNT_SID: z.string().optional(),
+  TWILIO_AUTH_TOKEN: z.string().optional(),
+  TWILIO_FROM_NUMBER: z.string().optional(),
+
+  /** OpenTelemetry / Sentry. Both no-op when unset. */
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
+  OTEL_SERVICE_NAME: z.string().default('coifyn-api'),
+  SENTRY_DSN: z.string().optional(),
 }).superRefine((env, ctx) => {
   if (env.DB_IAM_AUTH === 'true') {
     for (const key of ['DB_HOST', 'DB_NAME', 'DB_USER', 'AWS_REGION'] as const) {
