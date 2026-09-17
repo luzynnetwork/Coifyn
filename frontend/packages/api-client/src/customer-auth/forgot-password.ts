@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { ForgotPasswordInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { ForgotPasswordInput } from "./types";
 
 // ASSUMPTION: POST /portal/auth/forgot-password — route not confirmed yet, see types.ts.
 export function forgotPassword(input: ForgotPasswordInput): Promise<void> {

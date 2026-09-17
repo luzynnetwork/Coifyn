@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { AuthTokens, LoginInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { AuthTokens, LoginInput } from "./types";
 
 /** POST /auth/login */
 export function login(input: LoginInput): Promise<AuthTokens> {

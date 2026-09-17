@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { CustomerAuthTokens, LoginCustomerInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { CustomerAuthTokens, LoginCustomerInput } from "./types";
 
 // ASSUMPTION: POST /portal/auth/login — route not confirmed yet, see types.ts.
 export function login(input: LoginCustomerInput): Promise<CustomerAuthTokens> {

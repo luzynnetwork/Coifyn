@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { CustomerMeView, UpdateCustomerMeInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { CustomerMeView, UpdateCustomerMeInput } from "./types";
 
 // ASSUMPTION: GET /portal/me — route not confirmed yet, see types.ts.
 export function getMe(): Promise<CustomerMeView> {

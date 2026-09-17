@@ -1,5 +1,5 @@
-import { ApiError, parseApiError } from "./errors.js";
-import { getApiClientConfig } from "./config.js";
+import { ApiError, parseApiError } from "./errors";
+import { getApiClientConfig } from "./config";
 
 export interface RequestOptions {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";

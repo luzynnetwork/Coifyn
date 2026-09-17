@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { CustomerAuthTokens, VerifyCustomerInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { CustomerAuthTokens, VerifyCustomerInput } from "./types";
 
 // ASSUMPTION: POST /portal/auth/verify — route not confirmed yet, see types.ts.
 export function verify(input: VerifyCustomerInput): Promise<CustomerAuthTokens> {

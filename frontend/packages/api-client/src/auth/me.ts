@@ -1,5 +1,5 @@
-import { baseFetch } from "../http/base-fetch.js";
-import type { MeView, UpdateMeInput } from "./types.js";
+import { baseFetch } from "../http/base-fetch";
+import type { MeView, UpdateMeInput } from "./types";
 
 /** GET /auth/me */
 export function getMe(): Promise<MeView> {
