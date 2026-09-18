@@ -256,6 +256,11 @@ Cheap now, very expensive to retrofit:
 
 ## 11. Mobile strategy & app consolidation (decided 2026-09-17)
 
+**Scoped as its own phase:** [phase-2.5-mobile-app.md](phase-2.5-mobile-app.md), slotted
+between Phase 2 and Phase 3 in the build order (see `phases/README.md`). Stack decided
+2026-09-18: **React Native / Expo** — reuses `@coifyn/api-client` and `@coifyn/shared`
+directly since Expo can consume the same TypeScript workspace packages as the web apps.
+
 **Sequencing: web first, mobile later.** Mobile starts only after web reaches
 Phase 1–2 (salon core + scheduling live). Mobile consumes the same REST API —
 no backend rework needed, just a new frontend client. Do not build web and
