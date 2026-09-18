@@ -33,6 +33,11 @@ export const EVENT_REGISTRY = {
   TaxRateCreated: z.object({ name: z.string() }),
   TaxRateUpdated: anyPayload,
 
+  // ── services ──────────────────────────────────────────────────────────────
+  ServiceCreated: z.object({ name: z.string() }),
+  ServiceUpdated: anyPayload,
+  ServiceDeactivated: z.object({ serviceId: z.string() }),
+
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),
   RoleUpdated: anyPayload,

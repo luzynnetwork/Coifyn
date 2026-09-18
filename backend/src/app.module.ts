@@ -13,6 +13,7 @@ import { CustomerAuthModule } from './customer-auth/customer-auth.module.js';
 import { RbacModule } from './rbac/rbac.module.js';
 import { TenancyModule } from './tenancy/tenancy.module.js';
 import { SalonSetupModule } from './salon-setup/salon-setup.module.js';
+import { ServicesModule } from './services/services.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
@@ -56,6 +57,7 @@ import { ProvidersModule } from './providers/providers.module.js';
     RbacModule,
     TenancyModule,
     SalonSetupModule,
+    ServicesModule,
     ProvidersModule,
     RealtimeModule,
     NotificationsModule,

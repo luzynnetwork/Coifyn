@@ -22,6 +22,13 @@
       "when": 1789712075357,
       "tag": "0002_sad_smasher",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789734078460,
+      "tag": "0003_services_module",
+      "breakpoints": true
     }
   ]
 }
