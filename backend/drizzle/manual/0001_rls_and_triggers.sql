@@ -1,19 +1,17 @@
 -- Manual migration — run AFTER the generated schema migration.
 -- drizzle-kit does not generate roles, RLS policies or triggers; they live here
--- and are applied by db:migrate (drizzle-kit runs files in ./drizzle in order;
--- keep this lexically after the generated 0000_*.sql).
+-- and are applied by db:migrate.
 --
--- What this sets up (architecture.md §6, §8):
+-- Sets up (architecture.md §6, §8):
 --   1. a restricted application role with no BYPASSRLS
---   2. Row-Level Security on every salon-scoped table
---   3. an updated_at touch trigger
+--   2. a SECURITY DEFINER helper so tenant policies can consult `membership`
+--      without a table referencing its own policy (infinite recursion)
+--   3. Row-Level Security on every salon-scoped table
+--   4. an updated_at touch trigger
 
 -- ---------------------------------------------------------------------------
 -- 1. Restricted application role
 -- ---------------------------------------------------------------------------
--- The app connects as this role. It is NOT the table owner and is never granted
--- rds_superuser / neon_superuser, so RLS actually applies to it. Migrations keep
--- running as the owning role, which is what lets a backfill work at all.
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'coifyn_app') THEN
@@ -30,32 +28,51 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO coifyn_app;
 
 -- ---------------------------------------------------------------------------
--- 2. Row-Level Security
+-- 2. Membership lookup helpers (SECURITY DEFINER — bypass RLS internally)
 -- ---------------------------------------------------------------------------
--- Helper predicates, inlined per policy (no SQL function so the planner sees them):
---   system scope   : current_setting('app.system', true) = 'on'
---   member of salon : <salon_id> IN (SELECT salon_id FROM membership
---                                    WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
---   bootstrap salon : <salon_id> = nullif(current_setting('app.salon_id', true), '')::uuid
+-- The current request's user / salon from the SET LOCAL GUCs.
+CREATE OR REPLACE FUNCTION app_user_id() RETURNS uuid
+  LANGUAGE sql STABLE AS
+$$ SELECT nullif(current_setting('app.user_id', true), '')::uuid $$;
 
--- salon_organization ---------------------------------------------------------
+CREATE OR REPLACE FUNCTION app_declared_salon_id() RETURNS uuid
+  LANGUAGE sql STABLE AS
+$$ SELECT nullif(current_setting('app.salon_id', true), '')::uuid $$;
+
+CREATE OR REPLACE FUNCTION app_is_system() RETURNS boolean
+  LANGUAGE sql STABLE AS
+$$ SELECT current_setting('app.system', true) = 'on' $$;
+
+-- The salons the current user belongs to. SECURITY DEFINER so its own read of
+-- `membership` runs as the function owner and does NOT re-enter membership's RLS
+-- policy — which is what a plain subquery would do (infinite recursion).
+CREATE OR REPLACE FUNCTION app_salon_ids() RETURNS SETOF uuid
+  LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
+$$ SELECT salon_id FROM membership WHERE user_id = app_user_id() $$;
+
+REVOKE ALL ON FUNCTION app_salon_ids() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION app_salon_ids() TO coifyn_app;
+
+-- ---------------------------------------------------------------------------
+-- 3. Row-Level Security
+-- ---------------------------------------------------------------------------
+-- salon_organization — visible when a member, the declared bootstrap salon, or system
 ALTER TABLE salon_organization ENABLE ROW LEVEL SECURITY;
 ALTER TABLE salon_organization FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS salon_organization_rls ON salon_organization;
 CREATE POLICY salon_organization_rls ON salon_organization
   USING (
-    current_setting('app.system', true) = 'on'
-    OR id IN (SELECT salon_id FROM membership
-              WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
-    OR id = nullif(current_setting('app.salon_id', true), '')::uuid
+    app_is_system()
+    OR id = app_declared_salon_id()
+    OR id IN (SELECT app_salon_ids())
   )
   WITH CHECK (
-    current_setting('app.system', true) = 'on'
-    OR id = nullif(current_setting('app.salon_id', true), '')::uuid
-    OR id IN (SELECT salon_id FROM membership
-              WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
+    app_is_system()
+    OR id = app_declared_salon_id()
+    OR id IN (SELECT app_salon_ids())
   );
 
--- Generic salon-scoped tables ---------------------------------------------------
+-- Every salon-scoped table keys on salon_id.
 DO $$
 DECLARE
   t text;
@@ -66,41 +83,40 @@ BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP
     EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY;', t);
     EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY;', t);
+    EXECUTE format('DROP POLICY IF EXISTS %1$I_rls ON %1$I;', t);
     EXECUTE format($f$
       CREATE POLICY %1$I_rls ON %1$I
       USING (
-        current_setting('app.system', true) = 'on'
-        OR salon_id = nullif(current_setting('app.salon_id', true), '')::uuid
-        OR salon_id IN (SELECT salon_id FROM membership
-                        WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
+        app_is_system()
+        OR salon_id = app_declared_salon_id()
+        OR salon_id IN (SELECT app_salon_ids())
       )
       WITH CHECK (
-        current_setting('app.system', true) = 'on'
-        OR salon_id = nullif(current_setting('app.salon_id', true), '')::uuid
-        OR salon_id IN (SELECT salon_id FROM membership
-                        WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
+        app_is_system()
+        OR salon_id = app_declared_salon_id()
+        OR salon_id IN (SELECT app_salon_ids())
       );
     $f$, t);
   END LOOP;
 END $$;
 
--- audit_event : read-only for members of the salon; writes come from system code
+-- audit_event : members read; writes are system-scoped
 ALTER TABLE audit_event ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_event FORCE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS audit_event_rls ON audit_event;
 CREATE POLICY audit_event_rls ON audit_event
   USING (
-    current_setting('app.system', true) = 'on'
-    OR salon_id IN (SELECT salon_id FROM membership
-                    WHERE user_id = nullif(current_setting('app.user_id', true), '')::uuid)
+    app_is_system()
+    OR salon_id = app_declared_salon_id()
+    OR salon_id IN (SELECT app_salon_ids())
   )
-  WITH CHECK (current_setting('app.system', true) = 'on');
+  WITH CHECK (app_is_system() OR salon_id = app_declared_salon_id());
 
--- Tables deliberately WITHOUT a policy: user, session, password_reset (read
--- before any identity exists), permission (a global catalog), domain_event
--- (written and read only by system code).
+-- No policy: user, session, password_reset (pre-identity), permission (global
+-- catalog), domain_event (system code only).
 
 -- ---------------------------------------------------------------------------
--- 3. updated_at touch trigger
+-- 4. updated_at touch trigger
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
 BEGIN

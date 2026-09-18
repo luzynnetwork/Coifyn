@@ -11,3 +11,5 @@ export * from './auth.js';
 export * from './rbac.js';
 export * from './events.js';
 export * from './audit.js';
+export * from './notifications.js';
+export * from './customer-auth.js';

@@ -253,3 +253,57 @@ Cheap now, very expensive to retrofit:
 | 5 | Stripe Connect (marketplace payouts); usage-metering pipeline on the event log |
 | 6 | **Typesense** for Discover search; Cloudflare cache rules for public pages; **Kafka** likely on by now |
 | 7 | **ClickHouse + Metabase**; AI provider abstraction; possibly K8s |
+
+## 11. Mobile strategy & app consolidation (decided 2026-09-17)
+
+**Sequencing: web first, mobile later.** Mobile starts only after web reaches
+Phase 1–2 (salon core + scheduling live). Mobile consumes the same REST API —
+no backend rework needed, just a new frontend client. Do not build web and
+mobile simultaneously; it doubles frontend work against one backend
+bottleneck for no real gain at this stage.
+
+**Web stays 3 separate apps** (`management`, `client`, `customer`,
+`marketNetwork` — see §6/§7 of `Material/PROJECT-CONVENTIONS.txt`).
+Discovery (marketNetwork) and the transactional customer app are kept apart
+on web because marketNetwork needs to be public and SEO-crawlable (organic
+search is its main acquisition channel), while the customer app is
+authenticated and transactional. Different concerns, different apps.
+
+**Mobile merges customer + marketNetwork into one app.** Users don't install
+three apps on a phone. One mobile app: browse/search salons and stylists
+anonymously (marketNetwork surface), one tap to sign up/log in and book
+(customer surface) — the Uber Eats / DoorDash pattern. This is a genuine
+refinement over "keep everything separate": the reason web splits (SEO,
+crawlability) doesn't apply to a native app, so there's no reason to force
+users through two apps there.
+
+**`management` stays OUT of the merged mobile app.** Salon owners doing
+back-office work (reports, billing, RBAC config) is a web/desktop workflow —
+low mobile urgency. Front-desk staff running POS/queue during a shift *is*
+mobile/tablet-first, but that's a thinner, staff-only surface (schedule +
+queue, not full management), not the owner console. If a "join a salon as
+barber/staff" mobile flow is needed (per the signup flow below), it gets its
+own lightweight mobile view — never bolted onto the customer+marketNetwork
+app's navigation by default.
+
+**Signup flow (all platforms): marketNetwork/discovery is the front door.**
+A visitor lands on marketNetwork (web) or the merged app (mobile), browses
+anonymously, then chooses to:
+- register as a **customer** → customer app/surface
+- **register a salon** → management app (owner)
+- **join an existing salon as staff** (barber, manager, front desk) →
+  management app, scoped by RBAC (see §7)
+
+One app with a role-picker at login (customer vs. owner vs. staff all in one
+shell) was explicitly rejected — mixing "buying a haircut" and "running a
+business" in one navigation is a UX trap, and the three personas have
+materially different information architecture.
+
+**Known gap: mobile's marketplace half ships before its backend does.**
+MarketNetwork/Discovery (search, verified profiles, reviews — see
+`phases/phase-6-discovery-marketplace.md`) is Phase 6, well after Phases 1–5.
+If mobile ships before Phase 6 lands, its "browse the marketplace" surface is
+necessarily a stub — don't let the mobile UI promise a discovery experience
+the backend can't deliver yet. Given mobile is already sequenced *after* web
+Phase 1–2, this is unlikely to bite immediately, but revisit the mobile
+kickoff date against the Phase 6 date before committing to it.

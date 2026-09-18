@@ -104,6 +104,16 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.runScoped({ userId: null, salonId: null, system: true }, fn);
   }
 
+  /**
+   * No identity, no salon, no system flag — a transaction where every RLS policy
+   * evaluates false. For the auth flows, which touch only the policy-free tables
+   * (user, session, password_reset) before any identity exists. If such code
+   * accidentally reaches a policied table it safely sees nothing.
+   */
+  async withAnon<T>(fn: () => Promise<T>): Promise<T> {
+    return this.runScoped({ userId: null, salonId: null, system: false }, fn);
+  }
+
   /** Signup: declares the salon it is about to create, so the first few rows can
    *  authorize against a membership that does not exist yet. */
   async withBootstrapSalon<T>(

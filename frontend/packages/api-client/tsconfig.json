@@ -1,0 +1,13 @@
+{
+  "extends": "@coifyn/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": true,
+    "types": ["node"],
+    // Ships raw .ts via its `exports` map — see react-library.json.
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
