@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@coifyn/ui";
 import { listBranches } from "../../../lib/api/branches/list-branches";
-import { BranchSelector } from "./BranchSelector";
+import { BranchSelector } from "../../../shared/components/BranchSelector";
 import { BranchInfoTab } from "./BranchInfoTab";
 import { HoursTab } from "./HoursTab";
 import { ChairsTab } from "./ChairsTab";
