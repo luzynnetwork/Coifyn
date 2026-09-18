@@ -79,7 +79,8 @@ DECLARE
   tenant_tables text[] := ARRAY[
     'branch', 'chair', 'role', 'role_permission', 'membership', 'branch_membership',
     'branch_hours', 'branch_closure', 'tax_rate',
-    'service_category', 'service', 'service_add_on', 'service_add_on_link'
+    'service_category', 'service', 'service_add_on', 'service_add_on_link',
+    'stylist_profile', 'stylist_service', 'stylist_status_history'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

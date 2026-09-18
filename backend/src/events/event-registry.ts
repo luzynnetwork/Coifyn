@@ -38,6 +38,15 @@ export const EVENT_REGISTRY = {
   ServiceUpdated: anyPayload,
   ServiceDeactivated: z.object({ serviceId: z.string() }),
 
+  // ── stylists ──────────────────────────────────────────────────────────────
+  StylistProfileCreated: z.object({ userId: z.string(), branchId: z.string() }),
+  StylistProfileUpdated: anyPayload,
+  StylistStatusChanged: z.object({
+    stylistId: z.string(),
+    status: z.string(),
+  }),
+  StylistServiceUpdated: z.object({ stylistId: z.string() }),
+
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),
   RoleUpdated: anyPayload,

@@ -15,3 +15,4 @@ export * from './notifications.js';
 export * from './customer-auth.js';
 export * from './salon-setup.js';
 export * from './services.js';
+export * from './stylists.js';
