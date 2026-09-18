@@ -27,6 +27,11 @@ export const EVENT_REGISTRY = {
   ChairCreated: z.object({ branchId: z.string(), label: z.string() }),
   ChairUpdated: z.object({ changed: z.array(z.string()) }),
   ChairRetired: z.object({ branchId: z.string() }),
+  BranchHoursUpdated: z.object({ branchId: z.string() }),
+  BranchClosureCreated: z.object({ branchId: z.string() }),
+  BranchClosureDeleted: z.object({ branchId: z.string() }),
+  TaxRateCreated: z.object({ name: z.string() }),
+  TaxRateUpdated: anyPayload,
 
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),

@@ -5,59 +5,60 @@ import { EventBus } from '../../events/event-bus.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { Authorize } from '../../rbac/application/authorize.js';
 import { ResolveCurrentSalon } from '../../rbac/application/resolve-current-salon.js';
-import { BranchesRepo } from '../data/branches.repo.js';
-import type { UpdateBranchDto } from '../dto/branch.dto.js';
+import { BranchesRepo } from '../../tenancy/data/branches.repo.js';
+import { BranchHoursRepo } from '../data/branch-hours.repo.js';
+import type { SetBranchHoursDto } from '../dto/branch-hours.dto.js';
 
 @Injectable()
-export class UpdateBranch {
+export class SetBranchHours {
   constructor(
     private readonly database: DatabaseService,
     private readonly salon: ResolveCurrentSalon,
     private readonly authorize: Authorize,
     private readonly branches: BranchesRepo,
+    private readonly branchHours: BranchHoursRepo,
     private readonly events: EventBus,
     private readonly audit: AuditWriter,
-  ) {}
-
-  async execute(user: AuthUser, branchId: string, dto: UpdateBranchDto) {
-    return this.mutate(user, branchId, {
-      ...(dto.name !== undefined && { name: dto.name }),
-      ...(dto.address !== undefined && { address: dto.address }),
-      ...(dto.isActive !== undefined && { isActive: dto.isActive }),
-    });
+  ) {
   }
 
-  private async mutate(
-    user: AuthUser,
-    branchId: string,
-    patch: Record<string, unknown>,
-  ) {
+  async execute(user: AuthUser, branchId: string, dto: SetBranchHoursDto) {
     const salonId = await this.salon.execute(user);
     return this.database.withTenant(user.id, salonId, async () => {
-      const before = await this.branches.findById(salonId, branchId);
-      if (!before) throw new NotFoundException('Branch not found.');
+      const branch = await this.branches.findById(salonId, branchId);
+      if (!branch) throw new NotFoundException('Branch not found.');
 
-      // branch:update is scopable — a Manager may only edit their own branches.
       await this.authorize.check(user, 'branch:update', { salonId, branchId });
 
-      const updated = await this.branches.update(salonId, branchId, patch);
+      const rows = await this.branchHours.replaceWeek(
+        salonId,
+        branchId,
+        dto.week.map((day) => ({
+          weekday: day.weekday,
+          isClosed: day.isClosed,
+          opensAt: day.isClosed ? null : (day.opensAt ?? null),
+          closesAt: day.isClosed ? null : (day.closesAt ?? null),
+          breaks: day.isClosed ? [] : day.breaks,
+        })),
+      );
+
       await this.events.emit({
         aggregateType: 'branch',
         aggregateId: branchId,
-        type: 'BranchUpdated',
+        type: 'BranchHoursUpdated',
         salonId,
-        payload: { changed: Object.keys(patch) },
+        payload: { branchId },
       });
       await this.audit.write({
         salonId,
         actor: user,
-        action: 'branch.updated',
+        action: 'branch.hours_updated',
         targetType: 'branch',
         targetId: branchId,
-        before: { name: before.name, isActive: before.isActive },
-        after: patch,
+        after: { week: dto.week },
       });
-      return updated ?? before;
+
+      return rows;
     });
   }
 }

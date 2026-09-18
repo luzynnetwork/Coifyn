@@ -77,7 +77,8 @@ DO $$
 DECLARE
   t text;
   tenant_tables text[] := ARRAY[
-    'branch', 'chair', 'role', 'role_permission', 'membership', 'branch_membership'
+    'branch', 'chair', 'role', 'role_permission', 'membership', 'branch_membership',
+    'branch_hours', 'branch_closure', 'tax_rate'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP
