@@ -3,3 +3,5 @@ export type { UseNotificationStreamOptions } from "./hooks/use-notification-stre
 
 export { LiveStatusDot } from "./components/LiveStatusDot";
 export type { LiveStatusDotProps } from "./components/LiveStatusDot";
+
+export { dollarsToMinor, formatMoney, minorToDollars } from "./lib/format-money";
