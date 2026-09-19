@@ -47,6 +47,12 @@ export const EVENT_REGISTRY = {
   }),
   StylistServiceUpdated: z.object({ stylistId: z.string() }),
 
+  // ── staff ─────────────────────────────────────────────────────────────────
+  StaffInvited: z.object({ email: z.string(), roleId: z.string() }),
+  StaffJoined: z.object({ userId: z.string() }),
+  StaffRoleChanged: z.object({ targetUserId: z.string() }).passthrough(),
+  StaffDeactivated: z.object({ userId: z.string() }),
+
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),
   RoleUpdated: anyPayload,
