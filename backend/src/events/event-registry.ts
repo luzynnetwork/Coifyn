@@ -83,6 +83,15 @@ export const EVENT_REGISTRY = {
   AppointmentNoShow: appointmentPayload,
   AppointmentCancelled: appointmentPayload,
 
+  // ── tickets (POS) ─────────────────────────────────────────────────────────
+  TicketOpened: z.object({ ticketId: z.string(), branchId: z.string() }),
+  TicketLineAdded: z.object({ ticketId: z.string(), lineId: z.string() }),
+  DiscountApplied: z.object({
+    ticketId: z.string(),
+    discountMinor: z.number(),
+  }),
+  TicketVoided: z.object({ ticketId: z.string(), totalMinor: z.number() }),
+
   // ── customers (CRM) ───────────────────────────────────────────────────────
   CustomerCreated: z.object({ name: z.string() }),
   CustomerVisitRecorded: z.object({

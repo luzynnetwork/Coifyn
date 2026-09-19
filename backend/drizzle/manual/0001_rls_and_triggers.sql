@@ -84,7 +84,11 @@ DECLARE
     'staff_invite',
     'salon_customer',
     'queue_entry',
-    'appointment'
+    'appointment',
+    'register_session',
+    'ticket',
+    'ticket_line',
+    'ticket_discount'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

@@ -1,41 +1,8 @@
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
-import { uuidv7 } from 'uuidv7';
 import { createTestApp, type TestApp } from './support/app.js';
 import { adminSql, truncateAll } from './support/db.js';
 import { registerOwner, type OwnerContext } from './support/actors.js';
-
-/** Adds a second staff user straight into the salon (the invite flow is Phase 1).
- *  Returns their user id + a bearer for them. */
-async function addStaff(
-  ctx: TestApp,
-  owner: OwnerContext,
-  roleName: string,
-): Promise<{ userId: string; auth: { Authorization: string } }> {
-  const email = `staff.${uuidv7()}@example.com`;
-  const reg = await ctx.http
-    .post('/api/v1/auth/register')
-    .send({ email, password: 'correct horse battery staple', displayName: 'S' })
-    .expect(201);
-  const userId = reg.body.userId as string;
-
-  const sql = adminSql();
-  try {
-    const [role] = await sql`
-      select id from role where salon_id = ${owner.salonId} and name = ${roleName}`;
-    await sql`
-      insert into membership (id, salon_id, user_id, role_id)
-      values (${uuidv7()}, ${owner.salonId}, ${userId}, ${role.id})`;
-    await sql`
-      insert into branch_membership (id, salon_id, user_id, branch_id)
-      values (${uuidv7()}, ${owner.salonId}, ${userId}, ${owner.branchId})`;
-  } finally {
-    await sql.end();
-  }
-  return {
-    userId,
-    auth: { Authorization: `Bearer ${reg.body.tokens.accessToken}` },
-  };
-}
+import { addStaff } from './support/staff.js';
 
 describe('rbac', () => {
   let ctx: TestApp;
