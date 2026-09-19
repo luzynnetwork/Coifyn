@@ -82,7 +82,8 @@ DECLARE
     'service_category', 'service', 'service_add_on', 'service_add_on_link',
     'stylist_profile', 'stylist_service', 'stylist_status_history',
     'staff_invite',
-    'salon_customer'
+    'salon_customer',
+    'queue_entry'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

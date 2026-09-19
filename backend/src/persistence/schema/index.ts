@@ -18,3 +18,4 @@ export * from './services.js';
 export * from './stylists.js';
 export * from './staff.js';
 export * from './customers.js';
+export * from './queue.js';

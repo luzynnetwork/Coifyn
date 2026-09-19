@@ -63,6 +63,13 @@ export const EVENT_REGISTRY = {
   CustomerRegistered: z.object({ customerId: z.string() }),
   CustomerVerified: z.object({ customerId: z.string() }),
 
+  // ── queue ─────────────────────────────────────────────────────────────────
+  QueueJoined: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueAssigned: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueServiceStarted: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueCompleted: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueLeft: z.object({ entryId: z.string(), branchId: z.string() }),
+
   // ── customers (CRM) ───────────────────────────────────────────────────────
   CustomerCreated: z.object({ name: z.string() }),
   CustomerVisitRecorded: z.object({
