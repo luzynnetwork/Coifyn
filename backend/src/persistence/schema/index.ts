@@ -17,3 +17,4 @@ export * from './salon-setup.js';
 export * from './services.js';
 export * from './stylists.js';
 export * from './staff.js';
+export * from './customers.js';

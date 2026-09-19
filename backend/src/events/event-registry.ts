@@ -62,6 +62,13 @@ export const EVENT_REGISTRY = {
   // ── customer identity (customer-auth phase) ───────────────────────────────
   CustomerRegistered: z.object({ customerId: z.string() }),
   CustomerVerified: z.object({ customerId: z.string() }),
+
+  // ── customers (CRM) ───────────────────────────────────────────────────────
+  CustomerCreated: z.object({ name: z.string() }),
+  CustomerVisitRecorded: z.object({
+    customerId: z.string(),
+    spendMinor: z.number(),
+  }),
 } as const satisfies Record<string, z.ZodTypeAny>;
 
 export type EventType = keyof typeof EVENT_REGISTRY;

@@ -43,6 +43,13 @@
       "when": 1789801152177,
       "tag": "0005_staff_module",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789843903916,
+      "tag": "0006_powerful_nebula",
+      "breakpoints": true
     }
   ]
 }
