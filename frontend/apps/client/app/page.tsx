@@ -1,19 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-// Phase 0 placeholder: real session validation happens server-side via the API.
-// This only checks presence of the session cookie set at login.
+// Real session validation happens server-side via the API. This only checks
+// presence of the session cookie set at login, then sends staff into Setup —
+// the first screen of the Phase 1 salon-core flow.
 export default async function Home() {
   const cookieStore = await cookies();
   if (!cookieStore.get("coifyn_session")) {
     redirect("/login");
   }
 
-  return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <p className="text-sm text-[var(--color-muted-foreground)]">
-        Salon console — empty shell.
-      </p>
-    </main>
-  );
+  redirect("/setup");
 }
