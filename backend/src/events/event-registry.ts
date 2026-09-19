@@ -10,6 +10,11 @@ import { z } from 'zod';
  * are code-generated from here; for now the backend is the source of truth.
  */
 const anyPayload = z.record(z.string(), z.unknown());
+const appointmentPayload = z.object({
+  appointmentId: z.string(),
+  branchId: z.string(),
+  stylistId: z.string(),
+});
 
 export const EVENT_REGISTRY = {
   // ── auth ──────────────────────────────────────────────────────────────────
@@ -69,6 +74,14 @@ export const EVENT_REGISTRY = {
   QueueServiceStarted: z.object({ entryId: z.string(), branchId: z.string() }),
   QueueCompleted: z.object({ entryId: z.string(), branchId: z.string() }),
   QueueLeft: z.object({ entryId: z.string(), branchId: z.string() }),
+
+  // ── appointments ──────────────────────────────────────────────────────────
+  AppointmentBooked: appointmentPayload,
+  AppointmentArrived: appointmentPayload,
+  AppointmentStarted: appointmentPayload,
+  AppointmentCompleted: appointmentPayload,
+  AppointmentNoShow: appointmentPayload,
+  AppointmentCancelled: appointmentPayload,
 
   // ── customers (CRM) ───────────────────────────────────────────────────────
   CustomerCreated: z.object({ name: z.string() }),

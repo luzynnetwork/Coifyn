@@ -18,6 +18,7 @@ import { StylistsModule } from './stylists/stylists.module.js';
 import { StaffModule } from './staff/staff.module.js';
 import { CustomersModule } from './customers/customers.module.js';
 import { QueueModule } from './queue/queue.module.js';
+import { AppointmentsModule } from './appointments/appointments.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
@@ -66,6 +67,7 @@ import { ProvidersModule } from './providers/providers.module.js';
     StaffModule,
     CustomersModule,
     QueueModule,
+    AppointmentsModule,
     ProvidersModule,
     RealtimeModule,
     NotificationsModule,
