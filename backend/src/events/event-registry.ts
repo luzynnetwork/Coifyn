@@ -33,6 +33,26 @@ export const EVENT_REGISTRY = {
   TaxRateCreated: z.object({ name: z.string() }),
   TaxRateUpdated: anyPayload,
 
+  // ── services ──────────────────────────────────────────────────────────────
+  ServiceCreated: z.object({ name: z.string() }),
+  ServiceUpdated: anyPayload,
+  ServiceDeactivated: z.object({ serviceId: z.string() }),
+
+  // ── stylists ──────────────────────────────────────────────────────────────
+  StylistProfileCreated: z.object({ userId: z.string(), branchId: z.string() }),
+  StylistProfileUpdated: anyPayload,
+  StylistStatusChanged: z.object({
+    stylistId: z.string(),
+    status: z.string(),
+  }),
+  StylistServiceUpdated: z.object({ stylistId: z.string() }),
+
+  // ── staff ─────────────────────────────────────────────────────────────────
+  StaffInvited: z.object({ email: z.string(), roleId: z.string() }),
+  StaffJoined: z.object({ userId: z.string() }),
+  StaffRoleChanged: z.object({ targetUserId: z.string() }).passthrough(),
+  StaffDeactivated: z.object({ userId: z.string() }),
+
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),
   RoleUpdated: anyPayload,

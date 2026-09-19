@@ -44,6 +44,13 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
   ],
   // JwtAuthGuard is re-instantiated in every module that @UseGuards it, so its
   // full dependency set must be exported alongside it.
-  exports: [JwtAuthGuard, TokenService, UsersRepo, SessionsRepo],
+  exports: [
+    JwtAuthGuard,
+    TokenService,
+    UsersRepo,
+    SessionsRepo,
+    PasswordService,
+    IssueSession,
+  ],
 })
 export class AuthModule {}
