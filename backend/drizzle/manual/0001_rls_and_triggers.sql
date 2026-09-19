@@ -88,7 +88,10 @@ DECLARE
     'register_session',
     'ticket',
     'ticket_line',
-    'ticket_discount'
+    'ticket_discount',
+    'payment',
+    'refund',
+    'receipt'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

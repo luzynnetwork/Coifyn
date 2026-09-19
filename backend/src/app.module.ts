@@ -20,6 +20,7 @@ import { CustomersModule } from './customers/customers.module.js';
 import { QueueModule } from './queue/queue.module.js';
 import { AppointmentsModule } from './appointments/appointments.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
@@ -70,6 +71,7 @@ import { ProvidersModule } from './providers/providers.module.js';
     QueueModule,
     AppointmentsModule,
     TicketsModule,
+    PaymentsModule,
     ProvidersModule,
     RealtimeModule,
     NotificationsModule,

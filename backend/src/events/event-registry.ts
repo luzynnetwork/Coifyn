@@ -92,6 +92,20 @@ export const EVENT_REGISTRY = {
   }),
   TicketVoided: z.object({ ticketId: z.string(), totalMinor: z.number() }),
 
+  // ── payments ──────────────────────────────────────────────────────────────
+  PaymentCompleted: z.object({
+    paymentId: z.string(),
+    ticketId: z.string(),
+    amountMinor: z.number(),
+  }),
+  PaymentFailed: z.object({ paymentId: z.string(), ticketId: z.string() }),
+  RefundIssued: z.object({
+    refundId: z.string(),
+    paymentId: z.string(),
+    amountMinor: z.number(),
+  }),
+  ReceiptGenerated: z.object({ ticketId: z.string(), number: z.string() }),
+
   // ── customers (CRM) ───────────────────────────────────────────────────────
   CustomerCreated: z.object({ name: z.string() }),
   CustomerVisitRecorded: z.object({

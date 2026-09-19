@@ -21,3 +21,4 @@ export * from './customers.js';
 export * from './queue.js';
 export * from './appointments.js';
 export * from './tickets.js';
+export * from './payments.js';
