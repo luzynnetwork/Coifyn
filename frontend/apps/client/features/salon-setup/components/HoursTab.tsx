@@ -33,7 +33,22 @@ export function HoursTab({ branchId }: HoursTabProps) {
   const [week, setWeek] = useState<WeekdayHours[]>(emptyWeek());
 
   useEffect(() => {
-    if (hoursQuery.data?.week?.length) setWeek(hoursQuery.data.week);
+    const rows = hoursQuery.data;
+    if (!rows?.length) return;
+    // The API returns stored rows (null times when closed); map back to the editable shape.
+    setWeek(
+      emptyWeek().map((fallback) => {
+        const row = rows.find((r) => r.weekday === fallback.weekday);
+        if (!row) return fallback;
+        return {
+          weekday: row.weekday,
+          isClosed: row.isClosed,
+          opensAt: row.opensAt ?? fallback.opensAt,
+          closesAt: row.closesAt ?? fallback.closesAt,
+          breaks: row.breaks,
+        };
+      }),
+    );
   }, [hoursQuery.data]);
 
   const save = useMutation({
