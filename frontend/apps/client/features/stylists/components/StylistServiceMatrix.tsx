@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { StylistServiceView, StylistView } from "@coifyn/api-client";
+import type { StylistServiceEntry, StylistView } from "@coifyn/api-client";
 import { Button, Table, TableBody, TableHead, TableHeader, TableRow } from "@coifyn/ui";
 import { listServices } from "../../../lib/api/services/list-services";
 import { getStylistServices } from "../../../lib/api/stylists/get-stylist-services";
@@ -21,21 +21,25 @@ export function StylistServiceMatrix({ stylist }: StylistServiceMatrixProps) {
     queryFn: () => getStylistServices(stylist.id),
   });
 
-  const [rows, setRows] = useState<Map<string, StylistServiceView>>(new Map());
+  const [rows, setRows] = useState<Map<string, StylistServiceEntry>>(new Map());
 
   useEffect(() => {
-    const next = new Map<string, StylistServiceView>();
+    const next = new Map<string, StylistServiceEntry>();
     for (const row of stylistServicesQuery.data ?? []) {
-      next.set(row.serviceId, row);
+      next.set(row.serviceId, {
+        serviceId: row.serviceId,
+        canPerform: row.canPerform,
+        priceOverrideMinor: row.priceOverrideMinor,
+        durationOverrideMin: row.durationOverrideMin,
+      });
     }
     setRows(next);
   }, [stylistServicesQuery.data]);
 
-  function updateRow(serviceId: string, patch: Partial<StylistServiceView>) {
+  function updateRow(serviceId: string, patch: Partial<StylistServiceEntry>) {
     setRows((current) => {
       const next = new Map(current);
       const existing = next.get(serviceId) ?? {
-        stylistId: stylist.id,
         serviceId,
         canPerform: false,
         priceOverrideMinor: null,
@@ -47,15 +51,9 @@ export function StylistServiceMatrix({ stylist }: StylistServiceMatrixProps) {
   }
 
   const save = useMutation({
-    mutationFn: () =>
-      putStylistServices(stylist.id, {
-        services: Array.from(rows.values()).map((row) => ({
-          serviceId: row.serviceId,
-          canPerform: row.canPerform,
-          priceOverrideMinor: row.priceOverrideMinor ?? undefined,
-          durationOverrideMin: row.durationOverrideMin ?? undefined,
-        })),
-      }),
+    // Backend SetStylistServicesDto: { entries: [{ serviceId, priceOverrideMinor|null,
+    // durationOverrideMin|null, canPerform }] } — replaces the whole matrix.
+    mutationFn: () => putStylistServices(stylist.id, { entries: Array.from(rows.values()) }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["stylist-services", stylist.id] }),
   });

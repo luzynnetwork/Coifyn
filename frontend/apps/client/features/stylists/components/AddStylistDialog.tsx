@@ -62,7 +62,7 @@ export function AddStylistDialog({ branches, staff }: AddStylistDialogProps) {
             <SelectContent>
               {staff.map((member) => (
                 <SelectItem key={member.userId} value={member.userId}>
-                  {member.displayName}
+                  {member.displayName ?? member.email ?? member.userId}
                 </SelectItem>
               ))}
             </SelectContent>

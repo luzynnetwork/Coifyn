@@ -143,8 +143,10 @@ export type {
   CreateStylistInput,
   PutStylistServicesInput,
   SetStylistStatusInput,
+  StylistServiceEntry,
   StylistServiceView,
   StylistStatus,
+  StylistStatusResult,
   StylistView,
   UpdateStylistInput,
 } from "./stylists/types";
