@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { PermissionView, RoleGrant, RoleView } from "@coifyn/api-client";
+import type { PermissionGroupView, RoleGrant, RoleView } from "@coifyn/api-client";
 import {
   Button,
   Dialog,
@@ -19,7 +19,7 @@ import { updateRole } from "../../../lib/api/roles/update-role";
 import { PermissionPicker } from "./PermissionPicker";
 
 export type RoleFormProps = {
-  permissions: PermissionView[];
+  permissions: PermissionGroupView[];
 } & ({ mode: "create"; role?: undefined } | { mode: "edit"; role: RoleView });
 
 export function RoleForm({ mode, role, permissions }: RoleFormProps) {
@@ -67,7 +67,7 @@ export function RoleForm({ mode, role, permissions }: RoleFormProps) {
           <PermissionPicker permissions={permissions} grants={grants} onChange={setGrants} />
         </div>
         <DialogFooter>
-          <Button disabled={!name || save.isPending} onClick={() => save.mutate()}>
+          <Button disabled={name.trim().length < 2 || save.isPending} onClick={() => save.mutate()}>
             Save
           </Button>
         </DialogFooter>

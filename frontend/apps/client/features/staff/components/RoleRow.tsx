@@ -1,14 +1,14 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { PermissionView, RoleView } from "@coifyn/api-client";
+import type { PermissionGroupView, RoleView } from "@coifyn/api-client";
 import { Badge, Button, TableCell, TableRow } from "@coifyn/ui";
 import { deleteRole } from "../../../lib/api/roles/delete-role";
 import { RoleForm } from "./RoleForm";
 
 export interface RoleRowProps {
   role: RoleView;
-  permissions: PermissionView[];
+  permissions: PermissionGroupView[];
 }
 
 export function RoleRow({ role, permissions }: RoleRowProps) {

@@ -1,7 +1,7 @@
 import { baseFetch } from "../http/base-fetch";
-import type { CreateRoleInput, RoleView } from "./types";
+import type { CreateRoleInput, CreateRoleResult } from "./types";
 
-/** POST /roles */
-export function createRole(input: CreateRoleInput): Promise<RoleView> {
-  return baseFetch<RoleView>("/roles", { method: "POST", body: input });
+/** POST /roles (returns only the new role id) */
+export function createRole(input: CreateRoleInput): Promise<CreateRoleResult> {
+  return baseFetch<CreateRoleResult>("/roles", { method: "POST", body: input });
 }
