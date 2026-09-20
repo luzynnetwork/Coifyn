@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ServiceCategoryView } from "@coifyn/api-client";
 import { Badge, Button, Input } from "@coifyn/ui";
 import { createServiceCategory } from "../../../lib/api/service-categories/create-service-category";
+import { EditCategoryDialog } from "./EditCategoryDialog";
 
 export interface CategoryListProps {
   categories: ServiceCategoryView[];
@@ -36,14 +37,16 @@ export function CategoryList({ categories, selectedCategoryId, onSelect }: Categ
         All
       </Badge>
       {categories.map((category) => (
-        <Badge
-          key={category.id}
-          variant={selectedCategoryId === category.id ? "default" : "secondary"}
-          className="cursor-pointer"
-          onClick={() => onSelect(category.id)}
-        >
-          {category.name}
-        </Badge>
+        <div key={category.id} className="flex items-center">
+          <Badge
+            variant={selectedCategoryId === category.id ? "default" : "secondary"}
+            className="cursor-pointer"
+            onClick={() => onSelect(category.id)}
+          >
+            {category.name}
+          </Badge>
+          <EditCategoryDialog category={category} />
+        </div>
       ))}
 
       {adding ? (

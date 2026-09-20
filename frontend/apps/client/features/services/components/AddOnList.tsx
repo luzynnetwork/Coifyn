@@ -26,6 +26,8 @@ export function AddOnList() {
                 <TableHead>Name</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Duration</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-48" />
               </TableRow>
             </TableHeader>
             <TableBody>

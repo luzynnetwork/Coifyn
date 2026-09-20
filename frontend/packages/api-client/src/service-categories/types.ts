@@ -1,4 +1,4 @@
-/** Service category wire types — documented contract. */
+/** Service category wire types, mirrored from the `service_category` drizzle table and its DTOs. */
 
 export interface ServiceCategoryView {
   id: string;
@@ -6,9 +6,12 @@ export interface ServiceCategoryView {
   name: string;
   order: number;
   createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface CreateServiceCategoryInput {
+  /** 1-80 chars, unique per salon. */
   name: string;
   order?: number;
 }
