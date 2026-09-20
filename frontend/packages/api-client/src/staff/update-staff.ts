@@ -1,7 +1,7 @@
 import { baseFetch } from "../http/base-fetch";
-import type { StaffMemberView, UpdateStaffInput } from "./types";
+import type { UpdateStaffInput, UpdateStaffResult } from "./types";
 
-/** PATCH /staff/:userId */
-export function updateStaff(userId: string, input: UpdateStaffInput): Promise<StaffMemberView> {
-  return baseFetch<StaffMemberView>(`/staff/${userId}`, { method: "PATCH", body: input });
+/** PATCH /staff/:userId (role, branch memberships and/or active flag) */
+export function updateStaff(userId: string, input: UpdateStaffInput): Promise<UpdateStaffResult> {
+  return baseFetch<UpdateStaffResult>(`/staff/${userId}`, { method: "PATCH", body: input });
 }

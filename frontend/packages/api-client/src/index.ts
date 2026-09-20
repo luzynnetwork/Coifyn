@@ -92,6 +92,8 @@ export { deleteRole } from "./roles/delete-role";
 export { assignRole } from "./roles/assign-role";
 export type {
   CreateRoleInput,
+  CreateRoleResult,
+  PermissionGroupView,
   PermissionView,
   RoleGrant,
   RoleView,
@@ -157,6 +159,8 @@ export { listStaff } from "./staff/list-staff";
 export { updateStaff } from "./staff/update-staff";
 export type {
   AcceptStaffInviteInput,
+  AcceptStaffInviteResult,
+  UpdateStaffResult,
   CreateStaffInviteInput,
   StaffInviteResolveView,
   StaffInviteStatus,

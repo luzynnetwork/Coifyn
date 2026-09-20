@@ -28,7 +28,7 @@ export function StaffList() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium text-[var(--color-muted-foreground)]">Staff</h2>
-        <StaffTable staff={staffQuery.data ?? []} roles={roles} />
+        <StaffTable staff={staffQuery.data ?? []} roles={roles} branches={branches} />
       </section>
 
       <section className="flex flex-col gap-3">
