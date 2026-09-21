@@ -1,7 +1,20 @@
 import { baseFetch } from "../http/base-fetch";
-import type { PaymentView, RefundInput } from "./types";
+import type { RefundInput, RefundView } from "./types";
 
-/** POST /payments/:id/refund */
-export function refundPayment(id: string, input: RefundInput): Promise<PaymentView> {
-  return baseFetch<PaymentView>(`/payments/${id}/refund`, { method: "POST", body: input });
+export interface RefundPaymentOptions {
+  /** Sent as Idempotency-Key so a retried request cannot refund twice. */
+  idempotencyKey?: string;
+}
+
+/** POST /payments/:id/refund (needs payment:refund) returns the refund row. */
+export function refundPayment(
+  id: string,
+  input: RefundInput,
+  options: RefundPaymentOptions = {},
+): Promise<RefundView> {
+  return baseFetch<RefundView>(`/payments/${id}/refund`, {
+    method: "POST",
+    body: input,
+    idempotencyKey: options.idempotencyKey,
+  });
 }

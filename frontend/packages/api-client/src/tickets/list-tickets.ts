@@ -1,8 +1,11 @@
 import { baseFetch } from "../http/base-fetch";
-import type { TicketView } from "./types";
+import type { ListTicketsQuery, TicketView } from "./types";
 
-/** GET /tickets */
-export function listTickets(branchId?: string): Promise<TicketView[]> {
-  const query = branchId ? `?branchId=${branchId}` : "";
-  return baseFetch<TicketView[]>(`/tickets${query}`);
+/** GET /tickets?branchId&status (newest first, max 200; lines are not included). */
+export function listTickets(query: ListTicketsQuery = {}): Promise<TicketView[]> {
+  const params = new URLSearchParams();
+  if (query.branchId) params.set("branchId", query.branchId);
+  if (query.status) params.set("status", query.status);
+  const qs = params.toString();
+  return baseFetch<TicketView[]>(`/tickets${qs ? `?${qs}` : ""}`);
 }

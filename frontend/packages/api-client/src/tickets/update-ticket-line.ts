@@ -1,13 +1,13 @@
 import { baseFetch } from "../http/base-fetch";
-import type { TicketView, UpdateTicketLineInput } from "./types";
+import type { TicketLineResult, UpdateTicketLineInput } from "./types";
 
-/** PATCH /tickets/:id/lines/:lineId */
+/** PATCH /tickets/:id/lines/:lineId returns {ticket, line}. */
 export function updateTicketLine(
   id: string,
   lineId: string,
   input: UpdateTicketLineInput,
-): Promise<TicketView> {
-  return baseFetch<TicketView>(`/tickets/${id}/lines/${lineId}`, {
+): Promise<TicketLineResult> {
+  return baseFetch<TicketLineResult>(`/tickets/${id}/lines/${lineId}`, {
     method: "PATCH",
     body: input,
   });

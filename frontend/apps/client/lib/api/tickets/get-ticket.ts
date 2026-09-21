@@ -1,6 +1,6 @@
-import { getTicket as apiGetTicket, type TicketView } from "@coifyn/api-client";
+import { getTicket as apiGetTicket, type TicketDetailView } from "@coifyn/api-client";
 
 /** Thin wrapper around the shared "get ticket" call. */
-export function getTicket(id: string): Promise<TicketView> {
+export function getTicket(id: string): Promise<TicketDetailView> {
   return apiGetTicket(id);
 }

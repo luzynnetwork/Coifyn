@@ -1,7 +1,13 @@
 import { baseFetch } from "../http/base-fetch";
-import type { ApplyDiscountInput, TicketView } from "./types";
+import type { ApplyDiscountInput, TicketDiscountResult } from "./types";
 
-/** POST /tickets/:id/discount */
-export function applyTicketDiscount(id: string, input: ApplyDiscountInput): Promise<TicketView> {
-  return baseFetch<TicketView>(`/tickets/${id}/discount`, { method: "POST", body: input });
+/** POST /tickets/:id/discount returns {ticket, discount}; needs pos:discount. */
+export function applyTicketDiscount(
+  id: string,
+  input: ApplyDiscountInput,
+): Promise<TicketDiscountResult> {
+  return baseFetch<TicketDiscountResult>(`/tickets/${id}/discount`, {
+    method: "POST",
+    body: input,
+  });
 }

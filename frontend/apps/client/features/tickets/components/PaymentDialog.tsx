@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import type { PaymentMethod } from "@coifyn/api-client";
 import { formatMoney, minorToDollars, dollarsToMinor } from "@coifyn/shared";
@@ -19,33 +19,57 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  toast,
 } from "@coifyn/ui";
 import { createPayment } from "../../../lib/api/payments/create-payment";
+import { newIdempotencyKey } from "../../../lib/new-idempotency-key";
 
 export interface PaymentDialogProps {
   ticketId: string;
-  totalMinor: number;
+  /** What is still owed on the ticket (total minus completed payments), integer minor units. */
+  balanceDueMinor: number;
+  /** Called after any payment that changed the ticket (recorded or settled). */
   onPaid: () => void;
 }
 
-export function PaymentDialog({ ticketId, totalMinor, onPaid }: PaymentDialogProps) {
+export function PaymentDialog({ ticketId, balanceDueMinor, onPaid }: PaymentDialogProps) {
   const [open, setOpen] = useState(false);
   const [method, setMethod] = useState<PaymentMethod>("cash");
-  const [amount, setAmount] = useState(minorToDollars(totalMinor));
+  const [amount, setAmount] = useState(minorToDollars(balanceDueMinor));
+  // One key per attempt: reused if the request is retried, renewed once the
+  // server has answered (a declined card is a stored 201 and would be replayed).
+  const keyRef = useRef(newIdempotencyKey());
+
+  useEffect(() => {
+    if (open) setAmount(minorToDollars(balanceDueMinor));
+  }, [open, balanceDueMinor]);
 
   const pay = useMutation({
     mutationFn: () =>
-      createPayment({ ticketId, method, amountMinor: dollarsToMinor(amount) }),
-    onSuccess: () => {
+      createPayment(
+        { ticketId, method, amountMinor: dollarsToMinor(amount) },
+        { idempotencyKey: keyRef.current },
+      ),
+    onSuccess: (result) => {
+      keyRef.current = newIdempotencyKey();
+      // A declined card is HTTP 201 with settled:false and payment.status "failed".
+      if (result.payment.status === "failed") {
+        toast.error(result.payment.failureReason ?? "Card payment failed. Try again.");
+        return;
+      }
       onPaid();
-      setOpen(false);
+      if (result.settled) {
+        setOpen(false);
+      } else {
+        toast.success("Payment recorded. Balance still due.");
+      }
     },
   });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Pay {formatMoney(totalMinor)}</Button>
+        <Button disabled={balanceDueMinor <= 0}>Pay {formatMoney(balanceDueMinor)}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
