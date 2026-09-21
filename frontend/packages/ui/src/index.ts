@@ -96,6 +96,7 @@ export {
 } from "./components/ui/alert-dialog";
 
 export { Toaster } from "./components/ui/sonner";
+export { toast } from "sonner";
 
 export {
   Tabs,

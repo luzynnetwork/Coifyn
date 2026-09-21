@@ -1,12 +1,12 @@
 "use client";
 
-import type { PermissionView, RoleView } from "@coifyn/api-client";
+import type { PermissionGroupView, RoleView } from "@coifyn/api-client";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@coifyn/ui";
 import { RoleRow } from "./RoleRow";
 
 export interface RoleTableProps {
   roles: RoleView[];
-  permissions: PermissionView[];
+  permissions: PermissionGroupView[];
 }
 
 export function RoleTable({ roles, permissions }: RoleTableProps) {

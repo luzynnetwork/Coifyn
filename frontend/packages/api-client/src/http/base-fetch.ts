@@ -53,7 +53,11 @@ export async function baseFetch<T>(
   if (response.status === 204) {
     return undefined as T;
   }
-  return (await response.json()) as T;
+  // Nest serialises a `null` return value as an empty 200 body (e.g. GET
+  // /register-sessions/current with no open register); treat that as undefined.
+  const text = await response.text();
+  if (text.length === 0) return undefined as T;
+  return JSON.parse(text) as T;
 }
 
 /** Runs the app-configured refresh handler at most once per 401. */

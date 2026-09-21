@@ -92,6 +92,8 @@ export { deleteRole } from "./roles/delete-role";
 export { assignRole } from "./roles/assign-role";
 export type {
   CreateRoleInput,
+  CreateRoleResult,
+  PermissionGroupView,
   PermissionView,
   RoleGrant,
   RoleView,
@@ -141,8 +143,10 @@ export type {
   CreateStylistInput,
   PutStylistServicesInput,
   SetStylistStatusInput,
+  StylistServiceEntry,
   StylistServiceView,
   StylistStatus,
+  StylistStatusResult,
   StylistView,
   UpdateStylistInput,
 } from "./stylists/types";
@@ -157,6 +161,8 @@ export { listStaff } from "./staff/list-staff";
 export { updateStaff } from "./staff/update-staff";
 export type {
   AcceptStaffInviteInput,
+  AcceptStaffInviteResult,
+  UpdateStaffResult,
   CreateStaffInviteInput,
   StaffInviteResolveView,
   StaffInviteStatus,
@@ -176,6 +182,7 @@ export { getQueueWaitEstimate } from "./queue/get-queue-wait-estimate";
 export type {
   AssignQueueInput,
   JoinQueueInput,
+  QueueEntryRow,
   QueueEntryStatus,
   QueueEntryView,
   RemoveQueueInput,
@@ -216,9 +223,14 @@ export type {
   ApplyDiscountInput,
   CloseRegisterSessionInput,
   CreateTicketInput,
+  ListTicketsQuery,
   OpenRegisterSessionInput,
   RegisterSessionView,
+  TicketDetailView,
+  TicketDiscountResult,
+  TicketDiscountView,
   TicketLineKind,
+  TicketLineResult,
   TicketLineView,
   TicketSource,
   TicketStatus,
@@ -233,14 +245,20 @@ export { refundPayment } from "./payments/refund-payment";
 export { listPayments } from "./payments/list-payments";
 export { getPayment } from "./payments/get-payment";
 export { getTicketReceipt } from "./payments/get-ticket-receipt";
+export type { CreatePaymentOptions } from "./payments/create-payment";
+export type { RefundPaymentOptions } from "./payments/refund-payment";
 export type {
   CreatePaymentInput,
+  ListPaymentsQuery,
+  PaymentDetailView,
   PaymentMethod,
   PaymentStatus,
   PaymentView,
-  ReceiptLineView,
+  ReceiptRowView,
   ReceiptView,
   RefundInput,
+  RefundView,
+  TakePaymentResult,
 } from "./payments/types";
 
 // ── Customers ─────────────────────────────────────────────────────────────

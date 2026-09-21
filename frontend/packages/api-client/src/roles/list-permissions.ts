@@ -1,7 +1,7 @@
 import { baseFetch } from "../http/base-fetch";
-import type { PermissionView } from "./types";
+import type { PermissionGroupView } from "./types";
 
 /** GET /permissions */
-export function listPermissions(): Promise<PermissionView[]> {
-  return baseFetch<PermissionView[]>("/permissions");
+export function listPermissions(): Promise<PermissionGroupView[]> {
+  return baseFetch<PermissionGroupView[]>("/permissions");
 }

@@ -10,6 +10,7 @@ export interface TaxRateView {
   isDefault: boolean;
   isActive: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateTaxRateInput {

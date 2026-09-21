@@ -23,7 +23,7 @@ export function DayReport() {
   const branchId = selectedBranchId ?? branches[0]?.id ?? "";
 
   const dayReportQuery = useQuery({
-    queryKey: ["day-report", branchId, date],
+    queryKey: ["reports", "day", branchId, date],
     queryFn: () => getDayReport(branchId, date),
     enabled: Boolean(branchId && date),
   });
@@ -49,8 +49,8 @@ export function DayReport() {
 
       {dayReportQuery.data ? <DayReportStats report={dayReportQuery.data} /> : null}
 
-      <SalesByStylist date={date} />
-      <SalesByService date={date} />
+      <SalesByStylist branchId={branchId} date={date} />
+      <SalesByService branchId={branchId} date={date} />
     </main>
   );
 }

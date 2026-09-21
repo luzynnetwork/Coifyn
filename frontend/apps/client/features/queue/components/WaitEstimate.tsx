@@ -17,7 +17,7 @@ export function WaitEstimate({ entryId }: WaitEstimateProps) {
 
   return (
     <span className="text-xs text-[var(--color-muted-foreground)]">
-      {estimateQuery.data.aheadCount} ahead · ~{estimateQuery.data.estimatedMinutes} min wait
+      {estimateQuery.data.ahead} ahead · ~{estimateQuery.data.minutes} min wait
     </span>
   );
 }

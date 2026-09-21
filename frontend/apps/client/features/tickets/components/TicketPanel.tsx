@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatMoney } from "@coifyn/shared";
-import { Button, Card, CardContent, CardFooter, CardHeader, CardTitle, Separator } from "@coifyn/ui";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, Separator } from "@coifyn/ui";
 import { getTicket } from "../../../lib/api/tickets/get-ticket";
-import { voidTicket } from "../../../lib/api/tickets/void-ticket";
+import { listPayments } from "../../../lib/api/payments/list-payments";
 import { LineItem } from "./LineItem";
 import { ServicePicker } from "./ServicePicker";
 import { DiscountDialog } from "./DiscountDialog";
 import { PaymentDialog } from "./PaymentDialog";
 import { ReceiptView } from "./ReceiptView";
+import { VoidTicketButton } from "./VoidTicketButton";
 
 export interface TicketPanelProps {
   ticketId: string;
+  /** Called when the ticket is voided or the receipt is dismissed. */
   onVoided: () => void;
 }
 
@@ -23,11 +24,9 @@ export function TicketPanel({ ticketId, onVoided }: TicketPanelProps) {
     queryKey: ["ticket", ticketId],
     queryFn: () => getTicket(ticketId),
   });
-  const [voidReason, setVoidReason] = useState("");
-
-  const voidMutation = useMutation({
-    mutationFn: () => voidTicket(ticketId, { reason: voidReason || "Voided at register" }),
-    onSuccess: onVoided,
+  const paymentsQuery = useQuery({
+    queryKey: ["ticket-payments", ticketId],
+    queryFn: () => listPayments({ ticketId }),
   });
 
   const ticket = ticketQuery.data;
@@ -37,8 +36,27 @@ export function TicketPanel({ ticketId, onVoided }: TicketPanelProps) {
     return <ReceiptView ticketId={ticketId} onDone={onVoided} />;
   }
 
+  if (ticket.status === "voided") {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Ticket voided</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-[var(--color-muted-foreground)]">
+          {ticket.voidReason}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const paidMinor = (paymentsQuery.data ?? [])
+    .filter((payment) => payment.status === "completed")
+    .reduce((sum, payment) => sum + payment.amountMinor, 0);
+  const balanceDueMinor = Math.max(ticket.totalMinor - paidMinor, 0);
+
   function invalidate() {
     queryClient.invalidateQueries({ queryKey: ["ticket", ticketId] });
+    queryClient.invalidateQueries({ queryKey: ["ticket-payments", ticketId] });
   }
 
   return (
@@ -63,7 +81,7 @@ export function TicketPanel({ ticketId, onVoided }: TicketPanelProps) {
           <span>{formatMoney(ticket.subtotalMinor)}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span>Discount</span>
+          <span>Discount{ticket.discount ? ` (${ticket.discount.reason})` : ""}</span>
           <span>-{formatMoney(ticket.discountMinor)}</span>
         </div>
         <div className="flex justify-between text-sm">
@@ -74,20 +92,21 @@ export function TicketPanel({ ticketId, onVoided }: TicketPanelProps) {
           <span>Total</span>
           <span>{formatMoney(ticket.totalMinor)}</span>
         </div>
+        {paidMinor > 0 ? (
+          <div className="flex justify-between text-sm">
+            <span>Paid so far</span>
+            <span>{formatMoney(paidMinor)}</span>
+          </div>
+        ) : null}
       </CardContent>
       <CardFooter className="flex flex-wrap gap-2">
         <DiscountDialog ticketId={ticketId} onApplied={invalidate} />
-        <PaymentDialog ticketId={ticketId} totalMinor={ticket.totalMinor} onPaid={invalidate} />
-        <Button
-          variant="destructive"
-          disabled={voidMutation.isPending}
-          onClick={() => {
-            setVoidReason("Voided at register");
-            voidMutation.mutate();
-          }}
-        >
-          Void
-        </Button>
+        <PaymentDialog
+          ticketId={ticketId}
+          balanceDueMinor={balanceDueMinor}
+          onPaid={invalidate}
+        />
+        <VoidTicketButton ticketId={ticketId} onVoided={onVoided} />
       </CardFooter>
     </Card>
   );

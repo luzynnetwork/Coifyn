@@ -2,10 +2,15 @@
 
 export interface PermissionView {
   key: string;
-  resource: string;
   action: string;
   description: string;
   scopable: boolean;
+}
+
+/** GET /permissions returns the catalog grouped by resource. */
+export interface PermissionGroupView {
+  resource: string;
+  permissions: PermissionView[];
 }
 
 export interface RoleGrant {
@@ -13,6 +18,7 @@ export interface RoleGrant {
   scope: "org" | "branch";
 }
 
+/** GET /roles row: the `role` table plus its grants. */
 export interface RoleView {
   id: string;
   salonId: string;
@@ -20,14 +26,23 @@ export interface RoleView {
   isStandard: boolean;
   grants: RoleGrant[];
   createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface CreateRoleInput {
+  /** 2-60 chars. */
   name: string;
   grants: RoleGrant[];
 }
 
+/** PATCH /roles/:id: the backend DTO requires BOTH fields on every update. */
 export interface UpdateRoleInput {
-  name?: string;
-  grants?: RoleGrant[];
+  name: string;
+  grants: RoleGrant[];
+}
+
+/** POST /roles response. */
+export interface CreateRoleResult {
+  id: string;
 }

@@ -1,13 +1,13 @@
 "use client";
 
-import type { ServiceView, StylistServiceView } from "@coifyn/api-client";
+import type { ServiceView, StylistServiceEntry } from "@coifyn/api-client";
 import { dollarsToMinor, minorToDollars } from "@coifyn/shared";
 import { Input, TableCell, TableRow } from "@coifyn/ui";
 
 export interface ServiceMatrixRowProps {
   service: ServiceView;
-  row: StylistServiceView | null;
-  onChange: (patch: Partial<StylistServiceView>) => void;
+  row: StylistServiceEntry | null;
+  onChange: (patch: Partial<StylistServiceEntry>) => void;
 }
 
 export function ServiceMatrixRow({ service, row, onChange }: ServiceMatrixRowProps) {

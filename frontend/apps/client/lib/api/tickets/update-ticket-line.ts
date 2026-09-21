@@ -1,6 +1,6 @@
 import {
   updateTicketLine as apiUpdateTicketLine,
-  type TicketView,
+  type TicketLineResult,
   type UpdateTicketLineInput,
 } from "@coifyn/api-client";
 
@@ -9,6 +9,6 @@ export function updateTicketLine(
   id: string,
   lineId: string,
   input: UpdateTicketLineInput,
-): Promise<TicketView> {
+): Promise<TicketLineResult> {
   return apiUpdateTicketLine(id, lineId, input);
 }

@@ -8,6 +8,6 @@ import {
 export function setBranchHours(
   branchId: string,
   input: SetBranchHoursInput,
-): Promise<BranchHoursView> {
+): Promise<BranchHoursView[]> {
   return apiSetBranchHours(branchId, input);
 }

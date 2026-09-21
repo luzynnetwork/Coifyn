@@ -1,7 +1,7 @@
 import { baseFetch } from "../http/base-fetch";
-import type { PaymentView } from "./types";
+import type { PaymentDetailView } from "./types";
 
-/** GET /payments/:id */
-export function getPayment(id: string): Promise<PaymentView> {
-  return baseFetch<PaymentView>(`/payments/${id}`);
+/** GET /payments/:id (includes refundedMinor). */
+export function getPayment(id: string): Promise<PaymentDetailView> {
+  return baseFetch<PaymentDetailView>(`/payments/${id}`);
 }
