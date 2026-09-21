@@ -4,6 +4,10 @@ import { useState } from "react";
 import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { toast } from "@coifyn/ui";
 import { errorMessage } from "../lib/error-message";
+import { configureSession } from "../lib/session";
+
+// Runs once in the browser before any query fires.
+configureSession();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(

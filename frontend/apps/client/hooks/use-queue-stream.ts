@@ -1,22 +1,24 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+import { getApiClientConfig } from "@coifyn/api-client";
 
 export interface UseQueueStreamOptions {
   branchId: string;
-  /** Called on every SSE message for the topic — callers typically invalidateQueries. */
+  /** Called on every SSE message for the topic; callers typically invalidateQueries. */
   onEvent: () => void;
   enabled?: boolean;
 }
 
+const RECONNECT_DELAY_MS = 3_000;
+
 /**
- * Opens one EventSource against the shared realtime stream for the
- * `queue:<branchId>` topic and calls `onEvent` on every message. Mirrors
- * @coifyn/shared's useNotificationStream (architecture.md §10 / §4's
- * "SSE just triggers a refetch" pattern) but for the salon/branch-shared
- * realtime stream rather than the per-user notifications stream.
+ * Subscribes to the `queue:<branchId>` topic on GET /realtime/stream and calls
+ * `onEvent` on every message (the "SSE just triggers a refetch" pattern).
+ *
+ * The backend guards the stream with a Bearer token, which the browser's
+ * EventSource cannot send, so this reads the text/event-stream response with
+ * fetch. The server closes a stream after 5 minutes; this reconnects.
  */
 export function useQueueStream({ branchId, onEvent, enabled = true }: UseQueueStreamOptions) {
   const onEventRef = useRef(onEvent);
@@ -24,18 +26,48 @@ export function useQueueStream({ branchId, onEvent, enabled = true }: UseQueueSt
 
   useEffect(() => {
     if (!enabled || !branchId) return;
+    const controller = new AbortController();
 
-    const source = new EventSource(
-      `${API_BASE_URL}/realtime/stream?topic=queue:${branchId}`,
-      { withCredentials: true },
-    );
+    async function run() {
+      while (!controller.signal.aborted) {
+        try {
+          const config = getApiClientConfig();
+          const token = config.getAccessToken();
+          const response = await fetch(
+            `${config.baseUrl}/realtime/stream?topic=${encodeURIComponent(`queue:${branchId}`)}`,
+            {
+              signal: controller.signal,
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            },
+          );
+          if (response.status === 401 && config.refreshAccessToken) {
+            await config.refreshAccessToken();
+            continue;
+          }
+          if (!response.ok || !response.body) throw new Error(`stream ${response.status}`);
 
-    const handleMessage = () => onEventRef.current();
-    source.addEventListener("message", handleMessage);
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            // SSE frames end with a blank line; heartbeats are ": ping" comments.
+            const frames = buffer.split("\n\n");
+            buffer = frames.pop() ?? "";
+            if (frames.some((frame) => frame.split("\n").some((l) => l.startsWith("data:")))) {
+              onEventRef.current();
+            }
+          }
+        } catch {
+          if (controller.signal.aborted) return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
+      }
+    }
 
-    return () => {
-      source.removeEventListener("message", handleMessage);
-      source.close();
-    };
+    void run();
+    return () => controller.abort();
   }, [branchId, enabled]);
 }

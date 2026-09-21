@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button, Input } from "@coifyn/ui";
 import { login } from "../../../lib/api/auth/login";
+import { saveSession } from "../../../lib/session";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -11,7 +12,8 @@ export function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: () => login({ email, password }),
-    onSuccess: () => {
+    onSuccess: (tokens) => {
+      saveSession(tokens);
       window.location.href = "/";
     },
   });
