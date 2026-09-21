@@ -11,13 +11,23 @@ export interface DayReportStatsProps {
 export function DayReportStats({ report }: DayReportStatsProps) {
   const stats: Array<{ label: string; value: string }> = [
     { label: "Gross", value: formatMoney(report.grossMinor) },
-    { label: "Net", value: formatMoney(report.netMinor) },
+    { label: "Net (excl. tax)", value: formatMoney(report.netMinor) },
     { label: "Tax", value: formatMoney(report.taxMinor) },
-    { label: "Discounts", value: formatMoney(report.discountMinor) },
-    { label: "Voids", value: formatMoney(report.voidMinor) },
-    { label: "Refunds", value: formatMoney(report.refundMinor) },
+    { label: "Discounts", value: formatMoney(report.discountsMinor) },
+    {
+      label: `Voids (${report.voids.count})`,
+      value: formatMoney(report.voids.totalMinor),
+    },
+    {
+      label: `Refunds (${report.refunds.count})`,
+      value: formatMoney(report.refunds.amountMinor),
+    },
     { label: "Tickets", value: String(report.ticketCount) },
     { label: "Average ticket", value: formatMoney(report.averageTicketMinor) },
+    { label: "Walk-ins", value: String(report.walkIns) },
+    { label: "Appointments", value: String(report.appointments) },
+    { label: "Cash", value: formatMoney(report.paymentsByMethod.cash) },
+    { label: "Card", value: formatMoney(report.paymentsByMethod.card) },
   ];
 
   return (

@@ -4,6 +4,10 @@ import {
 } from "@coifyn/api-client";
 
 /** Thin wrapper around the shared "sales by service" call. */
-export function getSalesByService(from: string, to: string): Promise<SalesByServiceRow[]> {
-  return apiGetSalesByService(from, to);
+export function getSalesByService(
+  from: string,
+  to: string,
+  branchId?: string,
+): Promise<SalesByServiceRow[]> {
+  return apiGetSalesByService(from, to, branchId);
 }

@@ -6,14 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getSalesByService } from "../../../lib/api/reports/get-sales-by-service";
 
 export interface SalesByServiceProps {
+  branchId: string;
   date: string;
 }
 
-export function SalesByService({ date }: SalesByServiceProps) {
+export function SalesByService({ branchId, date }: SalesByServiceProps) {
   const salesQuery = useQuery({
-    queryKey: ["sales-by-service", date],
-    queryFn: () => getSalesByService(date, date),
-    enabled: Boolean(date),
+    queryKey: ["reports", "sales-by-service", branchId, date],
+    queryFn: () => getSalesByService(date, date, branchId),
+    enabled: Boolean(branchId && date),
   });
   const rows = salesQuery.data ?? [];
 
@@ -27,15 +28,15 @@ export function SalesByService({ date }: SalesByServiceProps) {
           <TableRow>
             <TableHead>Service</TableHead>
             <TableHead>Revenue</TableHead>
-            <TableHead>Count</TableHead>
+            <TableHead>Quantity</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.serviceId}>
-              <TableCell>{row.serviceName}</TableCell>
+            <TableRow key={`${row.serviceId}-${row.name}`}>
+              <TableCell>{row.name}</TableCell>
               <TableCell>{formatMoney(row.revenueMinor)}</TableCell>
-              <TableCell>{row.count}</TableCell>
+              <TableCell>{row.quantity}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -6,14 +6,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getSalesByStylist } from "../../../lib/api/reports/get-sales-by-stylist";
 
 export interface SalesByStylistProps {
+  branchId: string;
   date: string;
 }
 
-export function SalesByStylist({ date }: SalesByStylistProps) {
+export function SalesByStylist({ branchId, date }: SalesByStylistProps) {
   const salesQuery = useQuery({
-    queryKey: ["sales-by-stylist", date],
-    queryFn: () => getSalesByStylist(date, date),
-    enabled: Boolean(date),
+    queryKey: ["reports", "sales-by-stylist", branchId, date],
+    queryFn: () => getSalesByStylist(date, date, branchId),
+    enabled: Boolean(branchId && date),
   });
   const rows = salesQuery.data ?? [];
 
@@ -33,8 +34,8 @@ export function SalesByStylist({ date }: SalesByStylistProps) {
         </TableHeader>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.stylistId}>
-              <TableCell>{row.stylistName}</TableCell>
+            <TableRow key={row.stylistId ?? "unassigned"}>
+              <TableCell>{row.displayName ?? "Unassigned"}</TableCell>
               <TableCell>{formatMoney(row.revenueMinor)}</TableCell>
               <TableCell>{row.ticketCount}</TableCell>
               <TableCell>{row.serviceCount}</TableCell>
