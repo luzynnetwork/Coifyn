@@ -182,6 +182,7 @@ export { getQueueWaitEstimate } from "./queue/get-queue-wait-estimate";
 export type {
   AssignQueueInput,
   JoinQueueInput,
+  QueueEntryRow,
   QueueEntryStatus,
   QueueEntryView,
   RemoveQueueInput,

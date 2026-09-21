@@ -6,6 +6,7 @@ import { Button, Card, CardContent } from "@coifyn/ui";
 import { startQueue } from "../../../lib/api/queue/start-queue";
 import { completeQueue } from "../../../lib/api/queue/complete-queue";
 import { removeQueue } from "../../../lib/api/queue/remove-queue";
+import { ReasonDialog } from "../../../shared/components/ReasonDialog";
 import { WaitEstimate } from "./WaitEstimate";
 import { AssignDialog } from "./AssignDialog";
 
@@ -26,7 +27,7 @@ export function QueueEntryCard({ entry }: QueueEntryCardProps) {
     onSuccess: invalidate,
   });
   const remove = useMutation({
-    mutationFn: () => removeQueue(entry.id, { reason: "Left" }),
+    mutationFn: (reason: string) => removeQueue(entry.id, { reason }),
     onSuccess: invalidate,
   });
 
@@ -52,14 +53,18 @@ export function QueueEntryCard({ entry }: QueueEntryCardProps) {
             </Button>
           ) : null}
           {entry.status !== "in_service" ? (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={remove.isPending}
-              onClick={() => remove.mutate()}
-            >
-              Remove
-            </Button>
+            <ReasonDialog
+              title="Remove from queue"
+              description="Why is this person leaving the queue?"
+              confirmLabel="Remove"
+              isPending={remove.isPending}
+              onConfirm={(reason) => remove.mutate(reason)}
+              trigger={
+                <Button size="sm" variant="outline">
+                  Remove
+                </Button>
+              }
+            />
           ) : null}
         </div>
       </CardContent>

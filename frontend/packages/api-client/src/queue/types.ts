@@ -1,11 +1,16 @@
-/** Queue wire types — documented contract, see phases/phase-1-salon-core.md. */
+/**
+ * Queue wire types, mirrored from the `queue_entry` drizzle table,
+ * backend/src/queue/dto/queue.dto.ts and the use cases in backend/src/queue/application.
+ */
 
 export type QueueEntryStatus = "waiting" | "assigned" | "in_service" | "done" | "left";
 
-export interface QueueEntryView {
+/** `queue_entry` row (returned by join and every transition). */
+export interface QueueEntryRow {
   id: string;
+  salonId: string;
   branchId: string;
-  customerRef: string | null;
+  customerId: string | null;
   walkInName: string | null;
   requestedStylistId: string | null;
   requestedServiceIds: string[];
@@ -14,15 +19,28 @@ export interface QueueEntryView {
   assignedStylistId: string | null;
   assignedChairId: string | null;
   calledAt: string | null;
-  position: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  leftReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+/** GET /queue row: the entry plus its derived position (1-based among `waiting`, else null). */
+export interface QueueEntryView extends QueueEntryRow {
+  position: number | null;
 }
 
 export interface JoinQueueInput {
   branchId: string;
+  /** Provide customerId or walkInName (400 if neither). */
+  customerId?: string;
+  /** 1-120 chars. */
   walkInName?: string;
-  customerRef?: string;
-  requestedServiceIds: string[];
   requestedStylistId?: string;
+  /** At most 20 service ids; may be empty. */
+  requestedServiceIds: string[];
 }
 
 export interface AssignQueueInput {
@@ -31,10 +49,13 @@ export interface AssignQueueInput {
 }
 
 export interface RemoveQueueInput {
+  /** Mandatory, 1-200 chars. */
   reason: string;
 }
 
+/** GET /queue/:id/wait-estimate */
 export interface WaitEstimateView {
-  aheadCount: number;
-  estimatedMinutes: number;
+  /** People waiting ahead of this entry. */
+  ahead: number;
+  minutes: number;
 }
