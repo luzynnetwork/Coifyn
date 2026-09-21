@@ -9,6 +9,7 @@ import { removeQueue } from "../../../lib/api/queue/remove-queue";
 import { ReasonDialog } from "../../../shared/components/ReasonDialog";
 import { WaitEstimate } from "./WaitEstimate";
 import { AssignDialog } from "./AssignDialog";
+import { ChargeQueueButton } from "./ChargeQueueButton";
 
 export interface QueueEntryCardProps {
   entry: QueueEntryView;
@@ -51,6 +52,9 @@ export function QueueEntryCard({ entry }: QueueEntryCardProps) {
             <Button size="sm" disabled={complete.isPending} onClick={() => complete.mutate()}>
               Complete
             </Button>
+          ) : null}
+          {entry.status === "assigned" || entry.status === "in_service" ? (
+            <ChargeQueueButton entry={entry} />
           ) : null}
           {entry.status !== "in_service" ? (
             <ReasonDialog
