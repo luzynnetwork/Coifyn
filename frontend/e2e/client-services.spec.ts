@@ -6,7 +6,7 @@ test.use({ baseURL: "http://localhost:3002" });
 // value is enough to render the screen shell without a running backend.
 test.beforeEach(async ({ context }) => {
   await context.addCookies([
-    { name: "coifyn_session", value: "e2e", url: "http://localhost:3002" },
+    { name: "coifyn_refresh", value: "e2e", url: "http://localhost:3002" },
   ]);
 });
 

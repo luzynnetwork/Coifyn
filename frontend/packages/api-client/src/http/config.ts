@@ -16,7 +16,9 @@ export interface ApiClientConfig {
 }
 
 let config: ApiClientConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1",
+  // Same-origin by default: each app proxies /api to the API and holds the
+  // tokens in httpOnly cookies. Override for a server-to-server caller.
+  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "/api/v1",
   getAccessToken: () => null,
   setAccessToken: () => {},
 };

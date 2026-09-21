@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "/api/v1";
 
 export interface UseQueueStreamOptions {
   branchId: string;
