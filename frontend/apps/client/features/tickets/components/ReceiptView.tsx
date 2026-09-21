@@ -24,7 +24,7 @@ export function ReceiptView({ ticketId, onDone }: ReceiptViewProps) {
     <Card className="mx-auto max-w-sm font-mono">
       <CardHeader>
         <CardTitle>
-          {data.salon.brandName ? `${data.salon.brandName} · ` : ""}Receipt #{receipt.number}
+          {data.salon.brandName ? `${data.salon.brandName} Â· ` : ""}Receipt #{receipt.number}
         </CardTitle>
         {data.branch.name ? (
           <p className="text-xs text-[var(--color-muted-foreground)]">{data.branch.name}</p>
@@ -34,7 +34,7 @@ export function ReceiptView({ ticketId, onDone }: ReceiptViewProps) {
         {data.lines.map((line) => (
           <div key={line.id} className="flex justify-between">
             <span>
-              {line.description} × {line.qty}
+              {line.description} Ã— {line.qty}
             </span>
             <span>{formatMoney(line.lineTotalMinor)}</span>
           </div>
