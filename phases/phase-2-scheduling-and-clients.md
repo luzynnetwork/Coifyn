@@ -237,3 +237,35 @@ no account collects name + phone inline.
 9. A customer's booking request submitted from the `customer` app appears in the console
    for staff to confirm; one salon never sees another salon's calendar, customers or cut
    records.
+
+---
+
+## Implementation status
+
+Built on branch `phase1` (backend modules live at `backend/src/<module>`, not
+`backend/src/modules/<module>`):
+
+| Module | Status |
+|---|---|
+| `availability` (shifts, templates, time off, derived slots, roster job) | done |
+| `appointments` (hold/confirm, reschedule, stand-in reassign, day-sheet, front-desk board, reminders) | done |
+| `queue` (per-stylist board, wait estimate, switch-stylist) | done |
+| `stylists` (clock-in/out, presence side effects) | done |
+| `disruptions` (declare, running-late, notify, offers, escalate) | done |
+| `cut-records` (records, photos via presigned upload, formulas, last-cut) | done |
+| `customers` (preferences, consent, tags, notes, timeline, merge) | done |
+| `loyalty` (rules, accrual in the payment transaction, tiers, adjust, expiry) | done |
+| `notifications` (catalog, versioned templates, consent-aware dispatch, delivery log) | done (sms/email; WhatsApp and push need providers) |
+| `client-dashboard` | done |
+| `booking-requests` + `public-booking` (customer app slice) | done |
+
+Known gaps / simplifications:
+
+- **Recurring appointments** (`RecurringAppointment`, `RecurringAppointmentGenerated`) and **punch cards** are not built.
+- **Notification channels:** only email and SMS go through `NotificationProvider`; WhatsApp is stored as a preference but delivered over SMS; push is not wired. `delivery-status-poll` and `frequency-cap-check` jobs are not built.
+- **Background jobs** (reminders, roster generation, offer escalation, loyalty expiry) run as in-process timers (like the outbox relay), not BullMQ queues. Disable with `BACKGROUND_WORKERS=off`; they are always off under `NODE_ENV=test`.
+- **Loyalty accrual** is called inside `TakePayment` (atomic with the sale) rather than consuming `PaymentCompleted` from the bus.
+- **Stand-in "vouched"** means an explicit `stylist_service` row with `canPerform = true` for every booked service.
+- **Existing salons** keep their old standard-role grants; the new Phase 2 permissions are provisioned for salons created after this change. Grant them via custom roles or re-provision.
+- The public customer wait board **polls every 10 s**; the SSE stream stays staff-only.
+- The `customer` app has no account screens for this slice (booking needs only name + phone).
