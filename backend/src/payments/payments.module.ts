@@ -4,6 +4,7 @@ import { CustomersModule } from '../customers/customers.module.js';
 import { RbacModule } from '../rbac/rbac.module.js';
 import { TenancyModule } from '../tenancy/tenancy.module.js';
 import { TicketsModule } from '../tickets/tickets.module.js';
+import { LoyaltyModule } from '../loyalty/loyalty.module.js';
 import { PaymentsController } from './payments.controller.js';
 import { PaymentsRepo } from './data/payments.repo.js';
 import { RefundsRepo } from './data/refunds.repo.js';
@@ -17,7 +18,7 @@ import { GetTicketReceipt } from './application/get-ticket-receipt.js';
 /** Phase 1: cash and one card terminal (via the PaymentProvider seam, which is
  *  global), refunds, and receipts. */
 @Module({
-  imports: [AuthModule, RbacModule, TenancyModule, TicketsModule, CustomersModule],
+  imports: [AuthModule, RbacModule, TenancyModule, TicketsModule, CustomersModule, LoyaltyModule],
   controllers: [PaymentsController],
   providers: [
     PaymentsRepo,

@@ -14,6 +14,7 @@ import {
   PAYMENT_PROVIDER,
   type PaymentProvider,
 } from '../../providers/payment-provider.js';
+import { AccruePoints } from '../../loyalty/application/accrue-points.js';
 import { Authorize } from '../../rbac/application/authorize.js';
 import { ResolveCurrentSalon } from '../../rbac/application/resolve-current-salon.js';
 import { SalonsRepo } from '../../tenancy/data/salons.repo.js';
@@ -38,6 +39,7 @@ export class TakePayment {
     private readonly tickets: TicketsRepo,
     private readonly payments: PaymentsRepo,
     private readonly customers: CustomersRepo,
+    private readonly loyalty: AccruePoints,
     @Inject(PAYMENT_PROVIDER) private readonly provider: PaymentProvider,
     private readonly events: EventBus,
     private readonly audit: AuditWriter,
@@ -138,6 +140,12 @@ export class TakePayment {
             ticket.customerId,
             ticket.totalMinor,
           );
+          await this.loyalty.forPayment({
+            salonId,
+            customerId: ticket.customerId,
+            paymentId: payment.id,
+            totalMinor: ticket.totalMinor,
+          });
           await this.events.emit({
             aggregateType: 'customer',
             aggregateId: ticket.customerId,
