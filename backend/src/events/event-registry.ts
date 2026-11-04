@@ -10,6 +10,11 @@ import { z } from 'zod';
  * are code-generated from here; for now the backend is the source of truth.
  */
 const anyPayload = z.record(z.string(), z.unknown());
+const appointmentPayload = z.object({
+  appointmentId: z.string(),
+  branchId: z.string(),
+  stylistId: z.string(),
+});
 
 export const EVENT_REGISTRY = {
   // ── auth ──────────────────────────────────────────────────────────────────
@@ -27,6 +32,31 @@ export const EVENT_REGISTRY = {
   ChairCreated: z.object({ branchId: z.string(), label: z.string() }),
   ChairUpdated: z.object({ changed: z.array(z.string()) }),
   ChairRetired: z.object({ branchId: z.string() }),
+  BranchHoursUpdated: z.object({ branchId: z.string() }),
+  BranchClosureCreated: z.object({ branchId: z.string() }),
+  BranchClosureDeleted: z.object({ branchId: z.string() }),
+  TaxRateCreated: z.object({ name: z.string() }),
+  TaxRateUpdated: anyPayload,
+
+  // ── services ──────────────────────────────────────────────────────────────
+  ServiceCreated: z.object({ name: z.string() }),
+  ServiceUpdated: anyPayload,
+  ServiceDeactivated: z.object({ serviceId: z.string() }),
+
+  // ── stylists ──────────────────────────────────────────────────────────────
+  StylistProfileCreated: z.object({ userId: z.string(), branchId: z.string() }),
+  StylistProfileUpdated: anyPayload,
+  StylistStatusChanged: z.object({
+    stylistId: z.string(),
+    status: z.string(),
+  }),
+  StylistServiceUpdated: z.object({ stylistId: z.string() }),
+
+  // ── staff ─────────────────────────────────────────────────────────────────
+  StaffInvited: z.object({ email: z.string(), roleId: z.string() }),
+  StaffJoined: z.object({ userId: z.string() }),
+  StaffRoleChanged: z.object({ targetUserId: z.string() }).passthrough(),
+  StaffDeactivated: z.object({ userId: z.string() }),
 
   // ── rbac ──────────────────────────────────────────────────────────────────
   RoleCreated: z.object({ name: z.string() }).passthrough(),
@@ -37,6 +67,51 @@ export const EVENT_REGISTRY = {
   // ── customer identity (customer-auth phase) ───────────────────────────────
   CustomerRegistered: z.object({ customerId: z.string() }),
   CustomerVerified: z.object({ customerId: z.string() }),
+
+  // ── queue ─────────────────────────────────────────────────────────────────
+  QueueJoined: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueAssigned: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueServiceStarted: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueCompleted: z.object({ entryId: z.string(), branchId: z.string() }),
+  QueueLeft: z.object({ entryId: z.string(), branchId: z.string() }),
+
+  // ── appointments ──────────────────────────────────────────────────────────
+  AppointmentBooked: appointmentPayload,
+  AppointmentArrived: appointmentPayload,
+  AppointmentStarted: appointmentPayload,
+  AppointmentCompleted: appointmentPayload,
+  AppointmentNoShow: appointmentPayload,
+  AppointmentCancelled: appointmentPayload,
+
+  // ── tickets (POS) ─────────────────────────────────────────────────────────
+  TicketOpened: z.object({ ticketId: z.string(), branchId: z.string() }),
+  TicketLineAdded: z.object({ ticketId: z.string(), lineId: z.string() }),
+  DiscountApplied: z.object({
+    ticketId: z.string(),
+    discountMinor: z.number(),
+  }),
+  TicketVoided: z.object({ ticketId: z.string(), totalMinor: z.number() }),
+
+  // ── payments ──────────────────────────────────────────────────────────────
+  PaymentCompleted: z.object({
+    paymentId: z.string(),
+    ticketId: z.string(),
+    amountMinor: z.number(),
+  }),
+  PaymentFailed: z.object({ paymentId: z.string(), ticketId: z.string() }),
+  RefundIssued: z.object({
+    refundId: z.string(),
+    paymentId: z.string(),
+    amountMinor: z.number(),
+  }),
+  ReceiptGenerated: z.object({ ticketId: z.string(), number: z.string() }),
+
+  // ── customers (CRM) ───────────────────────────────────────────────────────
+  CustomerCreated: z.object({ name: z.string() }),
+  CustomerVisitRecorded: z.object({
+    customerId: z.string(),
+    spendMinor: z.number(),
+  }),
 } as const satisfies Record<string, z.ZodTypeAny>;
 
 export type EventType = keyof typeof EVENT_REGISTRY;

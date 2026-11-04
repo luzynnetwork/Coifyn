@@ -37,7 +37,6 @@ export const branches = pgTable(
     ...tenantColumns,
     name: text('name').notNull(),
     address: jsonb('address').notNull().default({}),
-    hours: jsonb('hours').notNull().default({}),
     isActive: boolean('is_active').notNull().default(true),
   },
   (t) => [index('branch_salon_idx').on(t.salonId)],

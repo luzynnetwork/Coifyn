@@ -19,8 +19,11 @@ stylist's time — not the shop. Four frontends over one transactional core:
 | 2 | `client` | Salon owner / manager / stylist / front desk | Run the shop: stylist profiles, chairs, bookings, walk-in queue, POS, payments, inventory, staff pay, marketing, reports |
 | 3 | `customer` | Salon clients | See each stylist's live status and open slots, book and confirm, track queue position, keep a cut record and loyalty, follow a stylist between shops |
 | 4 | `marketNetwork` | The public | Search stylists by the cut they actually deliver, browse verified portfolios, redeem offers |
+| 5 | `mobile` (React Native/Expo) | Salon clients (native) | Merged `customer` + `marketNetwork` on one native app — see `phase-2.5-mobile-app.md` and `architecture.md` §11 |
 
 There is **no separate finance app** — salon finance lives inside the `client` console.
+There is **no separate mobile app for `management`** — back-office work stays web-only;
+see `architecture.md` §11 for why.
 
 ## Phases
 
@@ -29,6 +32,7 @@ There is **no separate finance app** — salon finance lives inside the `client`
 | 0 | [phase-0-foundation.md](phase-0-foundation.md) | Foundation sprint — skeleton before any feature code | — |
 | 1 | [phase-1-salon-core.md](phase-1-salon-core.md) | One salon end to end — setup, services, stylists, walk-in queue, POS, payment, owner report | `client` |
 | 2 | [phase-2-scheduling-and-clients.md](phase-2-scheduling-and-clients.md) | Per-stylist calendars, appointments, live queue & status, customer + cut records, loyalty, real-time notifications | `client`, `customer` |
+| 2.5 | [phase-2.5-mobile-app.md](phase-2.5-mobile-app.md) | First native app — `customer` + `marketNetwork` merged on React Native/Expo, thin Discover stub until Phase 6 | `mobile` |
 | 3 | [phase-3-salon-operations.md](phase-3-salon-operations.md) | Inventory, memberships/packages/gift cards, commission & payroll & chair rental, marketing, forms, reviews | `client` |
 | 4 | [phase-4-customer-app.md](phase-4-customer-app.md) | Full customer app — discover, book a specific stylist, pre-visit, in-visit, feedback, loyalty, follow-your-stylist | `customer` |
 | 5 | [phase-5-operator-and-billing.md](phase-5-operator-and-billing.md) | Operator control plane — clients, entitlements, usage metering, billing calculator, support, platform payments | `management` |

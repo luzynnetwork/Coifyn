@@ -15,6 +15,76 @@
       "when": 1789579295957,
       "tag": "0001_cuddly_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789712075357,
+      "tag": "0002_sad_smasher",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789734078460,
+      "tag": "0003_services_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789735003754,
+      "tag": "0004_stylists_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789801152177,
+      "tag": "0005_staff_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789843903916,
+      "tag": "0006_powerful_nebula",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789844374994,
+      "tag": "0007_sudden_weapon_omega",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789845492097,
+      "tag": "0008_lazy_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789846244895,
+      "tag": "0009_hot_mindworm",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789846996708,
+      "tag": "0010_nasty_lightspeed",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793764985400,
+      "tag": "0011_phase2_scheduling",
+      "breakpoints": true
     }
   ]
 }

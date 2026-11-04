@@ -8,6 +8,28 @@ export function adminSql() {
 }
 
 const TENANT_TABLES = [
+  // Phase 1 tables carry no foreign keys, so CASCADE would not reach them.
+  'branch_hours',
+  'branch_closure',
+  'tax_rate',
+  'service_category',
+  'service',
+  'service_add_on',
+  'service_add_on_link',
+  'stylist_profile',
+  'stylist_service',
+  'stylist_status_history',
+  'staff_invite',
+  'salon_customer',
+  'queue_entry',
+  'appointment',
+  'register_session',
+  'ticket',
+  'ticket_line',
+  'ticket_discount',
+  'payment',
+  'refund',
+  'receipt',
   'audit_event',
   'domain_event',
   'branch_membership',

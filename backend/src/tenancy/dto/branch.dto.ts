@@ -33,10 +33,3 @@ export class UpdateBranchDto {
   @IsBoolean()
   isActive?: boolean;
 }
-
-export class SetBranchHoursDto {
-  /** Free-form for now: { mon: { open: "09:00", close: "18:00", breaks: [...] }, ... }.
-   *  A typed shape lands with the availability module (Phase 2). */
-  @IsObject()
-  hours!: Record<string, unknown>;
-}

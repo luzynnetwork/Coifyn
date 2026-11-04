@@ -54,6 +54,9 @@ import { EntitlementGuard } from './guards/entitlement.guard.js';
     MembershipsRepo,
     BranchMembershipsRepo,
     EntitlementGuard,
+    AssignRole,
+    SetBranchMemberships,
+    ListMembers,
   ],
 })
 export class RbacModule {}
