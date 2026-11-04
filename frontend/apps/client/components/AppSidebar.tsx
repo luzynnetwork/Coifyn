@@ -5,6 +5,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@coifyn/ui";
 
 const NAV_ITEMS = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "/front-desk", label: "Front desk" },
+  { href: "/roster", label: "Roster" },
+  { href: "/disruptions", label: "Disruptions" },
+  { href: "/customers", label: "Customers" },
   { href: "/setup", label: "Setup" },
   { href: "/services", label: "Services" },
   { href: "/team", label: "Team" },

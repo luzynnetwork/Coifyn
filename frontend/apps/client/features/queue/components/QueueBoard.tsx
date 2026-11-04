@@ -8,6 +8,7 @@ import { useQueueStream } from "../../../hooks/use-queue-stream";
 import { BranchSelector } from "../../../shared/components/BranchSelector";
 import { JoinQueueForm } from "./JoinQueueForm";
 import { QueueColumn } from "./QueueColumn";
+import { WaitLanes } from "./WaitLanes";
 
 export function QueueBoard() {
   const queryClient = useQueryClient();
@@ -44,6 +45,8 @@ export function QueueBoard() {
           {branchId ? <JoinQueueForm branchId={branchId} /> : null}
         </div>
       </div>
+
+      {branchId ? <WaitLanes branchId={branchId} /> : null}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <QueueColumn

@@ -10,6 +10,7 @@ import { ServicePicker } from "./ServicePicker";
 import { DiscountDialog } from "./DiscountDialog";
 import { PaymentDialog } from "./PaymentDialog";
 import { ReceiptView } from "./ReceiptView";
+import { CutRecordCapture } from "./CutRecordCapture";
 import { VoidTicketButton } from "./VoidTicketButton";
 
 export interface TicketPanelProps {
@@ -33,7 +34,14 @@ export function TicketPanel({ ticketId, onVoided }: TicketPanelProps) {
   if (!ticket) return null;
 
   if (ticket.status === "paid") {
-    return <ReceiptView ticketId={ticketId} onDone={onVoided} />;
+    return (
+      <div className="flex flex-col gap-4">
+        {ticket.customerId ? (
+          <CutRecordCapture customerId={ticket.customerId} ticketId={ticketId} />
+        ) : null}
+        <ReceiptView ticketId={ticketId} onDone={onVoided} />
+      </div>
+    );
   }
 
   if (ticket.status === "voided") {
