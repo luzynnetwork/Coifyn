@@ -153,6 +153,7 @@ export class AppointmentsRepo {
     startAt: Date;
     endAt: Date;
     notes: string | null;
+    source?: string;
   }): Promise<AppointmentRow> {
     const [row] = await this.database.db
       .insert(appointments)

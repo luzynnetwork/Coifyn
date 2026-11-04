@@ -12,6 +12,8 @@ import { CreateStylist } from './application/create-stylist.js';
 import { UpdateStylist } from './application/update-stylist.js';
 import { SetStylistStatus } from './application/set-stylist-status.js';
 import { ListStylistServices } from './application/list-stylist-services.js';
+import { StylistPresence } from './application/stylist-presence.js';
+import { ClockStylist } from './application/clock-stylist.js';
 import { SetStylistServices } from './application/set-stylist-services.js';
 
 /**
@@ -32,7 +34,9 @@ import { SetStylistServices } from './application/set-stylist-services.js';
     SetStylistStatus,
     ListStylistServices,
     SetStylistServices,
+    StylistPresence,
+    ClockStylist,
   ],
-  exports: [StylistProfilesRepo, StylistServicesRepo],
+  exports: [StylistProfilesRepo, StylistServicesRepo, StylistPresence],
 })
 export class StylistsModule {}

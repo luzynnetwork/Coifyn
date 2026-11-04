@@ -14,6 +14,7 @@ import { GetStylist } from './application/get-stylist.js';
 import { CreateStylist } from './application/create-stylist.js';
 import { UpdateStylist } from './application/update-stylist.js';
 import { SetStylistStatus } from './application/set-stylist-status.js';
+import { ClockStylist } from './application/clock-stylist.js';
 import { ListStylistServices } from './application/list-stylist-services.js';
 import { SetStylistServices } from './application/set-stylist-services.js';
 
@@ -23,6 +24,7 @@ import { SetStylistServices } from './application/set-stylist-services.js';
 @Controller({ version: '1' })
 export class StylistsController {
   constructor(
+    private readonly clockUc: ClockStylist,
     private readonly listStylistsUc: ListStylists,
     private readonly getStylistUc: GetStylist,
     private readonly createStylistUc: CreateStylist,
@@ -54,6 +56,16 @@ export class StylistsController {
     @Body() dto: UpdateStylistDto,
   ) {
     return this.updateStylistUc.execute(user, id, dto);
+  }
+
+  @Post('stylists/:id/clock-in')
+  clockIn(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.clockUc.execute(user, id, 'in');
+  }
+
+  @Post('stylists/:id/clock-out')
+  clockOut(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    return this.clockUc.execute(user, id, 'out');
   }
 
   @Post('stylists/:id/status')

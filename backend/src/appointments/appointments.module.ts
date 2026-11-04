@@ -20,6 +20,15 @@ import { StartAppointment } from './application/start-appointment.js';
 import { CompleteAppointment } from './application/complete-appointment.js';
 import { MarkAppointmentNoShow } from './application/mark-appointment-no-show.js';
 import { CancelAppointment } from './application/cancel-appointment.js';
+import { AppointmentBooker } from './application/appointment-booker.js';
+import { AppointmentReschedulesRepo } from './data/appointment-reschedules.repo.js';
+import { HoldSlot } from './application/hold-slot.js';
+import { ConfirmHold } from './application/confirm-hold.js';
+import { RescheduleAppointment } from './application/reschedule-appointment.js';
+import { ReassignStylist } from './application/reassign-stylist.js';
+import { GetDaySheet } from './application/get-day-sheet.js';
+import { GetFrontDeskBoard } from './application/get-front-desk-board.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
 
 /** Phase 1: staff-entered bookings with transactional double-booking prevention.
  *  The full calendar, holds and self-serve booking are Phase 2 and 4. */
@@ -32,6 +41,7 @@ import { CancelAppointment } from './application/cancel-appointment.js';
     StylistsModule,
     ServicesModule,
     CustomersModule,
+    NotificationsModule,
   ],
   controllers: [AppointmentsController],
   providers: [
@@ -48,7 +58,21 @@ import { CancelAppointment } from './application/cancel-appointment.js';
     CompleteAppointment,
     MarkAppointmentNoShow,
     CancelAppointment,
+    AppointmentBooker,
+    AppointmentReschedulesRepo,
+    HoldSlot,
+    ConfirmHold,
+    RescheduleAppointment,
+    ReassignStylist,
+    GetDaySheet,
+    GetFrontDeskBoard,
   ],
-  exports: [AppointmentsRepo, BookingHoldsRepo, AppointmentConflictGuard],
+  exports: [
+    AppointmentsRepo,
+    BookingHoldsRepo,
+    AppointmentConflictGuard,
+    AppointmentBooker,
+    ReassignStylist,
+  ],
 })
 export class AppointmentsModule {}

@@ -5,12 +5,20 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../auth/auth-user.js';
 import { AuditWriter } from '../../audit/audit-writer.js';
+import { formatLocal } from '../../common/day-bounds.js';
 import { EventBus } from '../../events/event-bus.js';
 import type { EventType } from '../../events/event-registry.js';
+import { DispatchNotification } from '../../notifications/application/dispatch-notification.js';
 import { DatabaseService } from '../../persistence/database.service.js';
 import { Authorize } from '../../rbac/application/authorize.js';
 import { ResolveCurrentSalon } from '../../rbac/application/resolve-current-salon.js';
 import { RealtimeBus } from '../../realtime/realtime-bus.js';
+import {
+  StylistPresence,
+  type PresenceChange,
+} from '../../stylists/application/stylist-presence.js';
+import { StylistProfilesRepo } from '../../stylists/data/stylist-profiles.repo.js';
+import { SalonsRepo } from '../../tenancy/data/salons.repo.js';
 import {
   AppointmentsRepo,
   type AppointmentStatus,
@@ -31,7 +39,9 @@ export interface AppointmentTransition {
 }
 
 /** The one place an appointment's status changes: authorize (branch-scoped),
- *  check the transition is legal, update, emit, audit, publish. */
+ *  check the transition is legal, update, emit, audit, publish. Starting a
+ *  service marks the stylist `busy`; completing it frees them (`available`);
+ *  cancelling tells the customer. */
 @Injectable()
 export class AppointmentTransitioner {
   constructor(
@@ -42,10 +52,15 @@ export class AppointmentTransitioner {
     private readonly events: EventBus,
     private readonly audit: AuditWriter,
     private readonly realtime: RealtimeBus,
+    private readonly presence: StylistPresence,
+    private readonly stylists: StylistProfilesRepo,
+    private readonly salons: SalonsRepo,
+    private readonly notifications: DispatchNotification,
   ) {}
 
   async execute(user: AuthUser, id: string, t: AppointmentTransition) {
     const salonId = await this.salon.execute(user);
+    let presenceChange: PresenceChange | null = null;
     const updated = await this.database.withTenant(
       user.id,
       salonId,
@@ -86,13 +101,47 @@ export class AppointmentTransitioner {
           before: { status: appt.status },
           after: { status: t.to },
         });
+
+        if (t.to === 'in_service') {
+          presenceChange = await this.presence.set(
+            salonId,
+            appt.stylistId,
+            'busy',
+            user.id,
+            'service started',
+          );
+        } else if (t.to === 'completed') {
+          const stylist = await this.stylists.findById(salonId, appt.stylistId);
+          if (stylist?.status === 'busy') {
+            presenceChange = await this.presence.set(
+              salonId,
+              appt.stylistId,
+              'available',
+              user.id,
+              'service completed',
+            );
+          }
+        } else if (t.to === 'cancelled' && appt.customerId) {
+          const tz = (await this.salons.findById(salonId))?.timezone ?? 'UTC';
+          await this.notifications.execute({
+            salonId,
+            key: 'appointment.cancelled',
+            customerId: appt.customerId,
+            dedupeKey: `appointment.cancelled:${id}`,
+            data: { startAt: formatLocal(appt.startAt, tz) },
+          });
+        }
         return row ?? appt;
       },
     );
 
+    this.presence.announce(presenceChange);
     this.realtime.publish(`bookings:${updated.stylistId}`, {
       appointmentId: id,
       status: updated.status,
+    });
+    this.realtime.publish(`front-desk:${updated.branchId}`, {
+      appointmentId: id,
     });
     return updated;
   }

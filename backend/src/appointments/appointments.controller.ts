@@ -26,6 +26,19 @@ import { StartAppointment } from './application/start-appointment.js';
 import { CompleteAppointment } from './application/complete-appointment.js';
 import { MarkAppointmentNoShow } from './application/mark-appointment-no-show.js';
 import { CancelAppointment } from './application/cancel-appointment.js';
+import {
+  ConfirmHoldDto,
+  DaySheetQuery,
+  HoldSlotDto,
+  ReassignStylistDto,
+  RescheduleDto,
+} from './dto/appointment-phase2.dto.js';
+import { HoldSlot } from './application/hold-slot.js';
+import { ConfirmHold } from './application/confirm-hold.js';
+import { RescheduleAppointment } from './application/reschedule-appointment.js';
+import { ReassignStylist } from './application/reassign-stylist.js';
+import { GetDaySheet } from './application/get-day-sheet.js';
+import { GetFrontDeskBoard } from './application/get-front-desk-board.js';
 
 @ApiTags('appointments')
 @ApiBearerAuth()
@@ -42,6 +55,12 @@ export class AppointmentsController {
     private readonly completeUc: CompleteAppointment,
     private readonly noShowUc: MarkAppointmentNoShow,
     private readonly cancelUc: CancelAppointment,
+    private readonly holdUc: HoldSlot,
+    private readonly confirmUc: ConfirmHold,
+    private readonly rescheduleUc: RescheduleAppointment,
+    private readonly reassignUc: ReassignStylist,
+    private readonly daySheetUc: GetDaySheet,
+    private readonly boardUc: GetFrontDeskBoard,
   ) {}
 
   @Get('appointments')
@@ -52,6 +71,44 @@ export class AppointmentsController {
   @Post('appointments')
   create(@CurrentUser() user: AuthUser, @Body() dto: CreateAppointmentDto) {
     return this.createUc.execute(user, dto);
+  }
+
+  @Get('appointments/day-sheet')
+  daySheet(@CurrentUser() user: AuthUser, @Query() q: DaySheetQuery) {
+    return this.daySheetUc.execute(user, q.stylistId, q.date);
+  }
+
+  @Get('front-desk/board')
+  board(@CurrentUser() user: AuthUser, @Query() q: ListAppointmentsQuery) {
+    return this.boardUc.execute(user, q.branchId, q.date);
+  }
+
+  @Post('appointments/hold')
+  hold(@CurrentUser() user: AuthUser, @Body() dto: HoldSlotDto) {
+    return this.holdUc.execute(user, dto);
+  }
+
+  @Post('appointments/confirm')
+  confirm(@CurrentUser() user: AuthUser, @Body() dto: ConfirmHoldDto) {
+    return this.confirmUc.execute(user, dto);
+  }
+
+  @Post('appointments/:id/reschedule')
+  reschedule(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: RescheduleDto,
+  ) {
+    return this.rescheduleUc.execute(user, id, dto);
+  }
+
+  @Post('appointments/:id/reassign-stylist')
+  reassign(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: ReassignStylistDto,
+  ) {
+    return this.reassignUc.execute(user, id, dto);
   }
 
   @Get('appointments/:id')

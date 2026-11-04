@@ -76,3 +76,12 @@ export function eachDate(from: string, to: string): string[] {
   }
   return out;
 }
+
+/** Human-readable local date+time for customer messages, e.g. "19 Sept 2026, 3:30 pm". */
+export function formatLocal(at: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(at);
+}
