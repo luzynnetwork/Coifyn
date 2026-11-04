@@ -23,6 +23,7 @@ import { AvailabilityModule } from './availability/availability.module.js';
 import { DisruptionsModule } from './disruptions/disruptions.module.js';
 import { CutRecordsModule } from './cut-records/cut-records.module.js';
 import { LoyaltyModule } from './loyalty/loyalty.module.js';
+import { ClientDashboardModule } from './client-dashboard/client-dashboard.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { ReportsModule } from './reports/reports.module.js';
@@ -79,6 +80,7 @@ import { ProvidersModule } from './providers/providers.module.js';
     DisruptionsModule,
     CutRecordsModule,
     LoyaltyModule,
+    ClientDashboardModule,
     TicketsModule,
     PaymentsModule,
     ReportsModule,

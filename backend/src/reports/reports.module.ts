@@ -20,5 +20,6 @@ import { GetRegisterSessionReport } from './application/get-register-session-rep
     GetSalesByStylist,
     GetRegisterSessionReport,
   ],
+  exports: [ReportsRepo],
 })
 export class ReportsModule {}
