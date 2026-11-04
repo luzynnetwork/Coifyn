@@ -89,6 +89,19 @@ export class AppointmentsRepo {
     });
   }
 
+  /** Booked appointments of any salon starting in [from, to) — system scope
+   *  only (the reminder job). */
+  listBookedStartingBetween(from: Date, to: Date): Promise<AppointmentRow[]> {
+    return this.database.db.query.appointments.findMany({
+      where: and(
+        eq(appointments.status, 'booked'),
+        gt(appointments.startAt, from),
+        lt(appointments.startAt, to),
+        isNull(appointments.deletedAt),
+      ),
+    });
+  }
+
   findById(salonId: string, id: string): Promise<AppointmentRow | undefined> {
     return this.database.db.query.appointments.findFirst({
       where: and(

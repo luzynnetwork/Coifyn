@@ -28,6 +28,8 @@ import { RescheduleAppointment } from './application/reschedule-appointment.js';
 import { ReassignStylist } from './application/reassign-stylist.js';
 import { GetDaySheet } from './application/get-day-sheet.js';
 import { GetFrontDeskBoard } from './application/get-front-desk-board.js';
+import { SendAppointmentReminders } from './application/send-appointment-reminders.js';
+import { ReminderWorker } from './reminder.worker.js';
 import { NotificationsModule } from '../notifications/notifications.module.js';
 
 /** Phase 1: staff-entered bookings with transactional double-booking prevention.
@@ -66,6 +68,8 @@ import { NotificationsModule } from '../notifications/notifications.module.js';
     ReassignStylist,
     GetDaySheet,
     GetFrontDeskBoard,
+    SendAppointmentReminders,
+    ReminderWorker,
   ],
   exports: [
     AppointmentsRepo,
@@ -73,6 +77,7 @@ import { NotificationsModule } from '../notifications/notifications.module.js';
     AppointmentConflictGuard,
     AppointmentBooker,
     ReassignStylist,
+    SendAppointmentReminders,
   ],
 })
 export class AppointmentsModule {}
