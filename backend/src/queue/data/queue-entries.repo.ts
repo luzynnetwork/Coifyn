@@ -17,6 +17,7 @@ export type QueueEntryPatch = Partial<
     QueueEntryRow,
     | 'status'
     | 'assignedStylistId'
+    | 'requestedStylistId'
     | 'assignedChairId'
     | 'calledAt'
     | 'startedAt'

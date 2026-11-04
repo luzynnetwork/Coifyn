@@ -23,6 +23,8 @@ import { StartQueueEntry } from './application/start-queue-entry.js';
 import { CompleteQueueEntry } from './application/complete-queue-entry.js';
 import { RemoveQueueEntry } from './application/remove-queue-entry.js';
 import { GetWaitEstimate } from './application/get-wait-estimate.js';
+import { GetQueueBoard } from './application/get-queue-board.js';
+import { SwitchQueueStylist } from './application/switch-queue-stylist.js';
 
 @ApiTags('queue')
 @ApiBearerAuth()
@@ -30,6 +32,8 @@ import { GetWaitEstimate } from './application/get-wait-estimate.js';
 @Controller({ version: '1' })
 export class QueueController {
   constructor(
+    private readonly boardUc: GetQueueBoard,
+    private readonly switchUc: SwitchQueueStylist,
     private readonly listQueueUc: ListQueue,
     private readonly joinQueueUc: JoinQueue,
     private readonly assignUc: AssignQueueEntry,
@@ -38,6 +42,20 @@ export class QueueController {
     private readonly removeUc: RemoveQueueEntry,
     private readonly waitEstimateUc: GetWaitEstimate,
   ) {}
+
+  @Get('queue/board')
+  board(@CurrentUser() user: AuthUser, @Query('branchId') branchId: string) {
+    return this.boardUc.execute(user, branchId);
+  }
+
+  @Post('queue/:id/switch-stylist')
+  switchStylist(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body('stylistId') stylistId: string,
+  ) {
+    return this.switchUc.execute(user, id, stylistId);
+  }
 
   @Get('queue')
   list(@CurrentUser() user: AuthUser, @Query('branchId') branchId: string) {

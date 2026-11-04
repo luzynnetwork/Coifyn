@@ -16,6 +16,9 @@ import { StartQueueEntry } from './application/start-queue-entry.js';
 import { CompleteQueueEntry } from './application/complete-queue-entry.js';
 import { RemoveQueueEntry } from './application/remove-queue-entry.js';
 import { GetWaitEstimate } from './application/get-wait-estimate.js';
+import { QueueBoardBuilder } from './application/queue-board-builder.js';
+import { GetQueueBoard } from './application/get-queue-board.js';
+import { SwitchQueueStylist } from './application/switch-queue-stylist.js';
 
 /** Phase 1: the walk-in line. Every mutation publishes `queue:<branchId>`. */
 @Module({
@@ -39,7 +42,10 @@ import { GetWaitEstimate } from './application/get-wait-estimate.js';
     CompleteQueueEntry,
     RemoveQueueEntry,
     GetWaitEstimate,
+    QueueBoardBuilder,
+    GetQueueBoard,
+    SwitchQueueStylist,
   ],
-  exports: [QueueEntriesRepo],
+  exports: [QueueEntriesRepo, QueueBoardBuilder],
 })
 export class QueueModule {}
