@@ -27,6 +27,8 @@ export interface AppointmentView {
   status: AppointmentStatus;
   source: string;
   notes: string | null;
+  /** Set when a stand-in took over: the stylist the customer chose. */
+  originalStylistId: string | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

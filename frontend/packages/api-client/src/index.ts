@@ -285,3 +285,13 @@ export type {
   SalesByServiceRow,
   SalesByStylistRow,
 } from "./reports/types";
+
+// ── Phase 2: availability, scheduling, clients, public ─────────────────────
+export * from "./availability/calls";
+export type * from "./availability/types";
+export * from "./scheduling/calls";
+export type * from "./scheduling/types";
+export * from "./clients/calls";
+export type * from "./clients/types";
+export * from "./public/calls";
+export type * from "./public/types";
