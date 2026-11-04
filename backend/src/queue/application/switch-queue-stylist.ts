@@ -43,11 +43,13 @@ export class SwitchQueueStylist {
         throw new BadRequestException('Stylist must belong to this branch.');
       }
 
-      const row = await this.entries.update(salonId, id, {
-        ...(entry.status === 'assigned'
+      const row = await this.entries.update(
+        salonId,
+        id,
+        entry.status === 'assigned'
           ? { assignedStylistId: stylistId }
-          : { requestedStylistId: stylistId }),
-      });
+          : { requestedStylistId: stylistId },
+      );
       await this.events.emit({
         aggregateType: 'queue_entry',
         aggregateId: id,
