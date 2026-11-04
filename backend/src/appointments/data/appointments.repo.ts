@@ -43,6 +43,7 @@ export type AppointmentPatch = Partial<
     | 'endAt'
     | 'status'
     | 'notes'
+    | 'originalStylistId'
   >
 >;
 
@@ -60,6 +61,26 @@ export class AppointmentsRepo {
       where: and(
         eq(appointments.salonId, salonId),
         eq(appointments.branchId, branchId),
+        gt(appointments.endAt, from),
+        lt(appointments.startAt, to),
+        isNull(appointments.deletedAt),
+      ),
+      orderBy: asc(appointments.startAt),
+    });
+  }
+
+  /** Active (blocking) appointments of one stylist overlapping [from, to). */
+  listActiveForStylist(
+    salonId: string,
+    stylistId: string,
+    from: Date,
+    to: Date,
+  ): Promise<AppointmentRow[]> {
+    return this.database.db.query.appointments.findMany({
+      where: and(
+        eq(appointments.salonId, salonId),
+        eq(appointments.stylistId, stylistId),
+        inArray(appointments.status, ACTIVE_STATUSES),
         gt(appointments.endAt, from),
         lt(appointments.startAt, to),
         isNull(appointments.deletedAt),

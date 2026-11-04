@@ -19,6 +19,7 @@ import { StaffModule } from './staff/staff.module.js';
 import { CustomersModule } from './customers/customers.module.js';
 import { QueueModule } from './queue/queue.module.js';
 import { AppointmentsModule } from './appointments/appointments.module.js';
+import { AvailabilityModule } from './availability/availability.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { ReportsModule } from './reports/reports.module.js';

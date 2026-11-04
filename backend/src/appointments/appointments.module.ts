@@ -8,6 +8,7 @@ import { StylistsModule } from '../stylists/stylists.module.js';
 import { TenancyModule } from '../tenancy/tenancy.module.js';
 import { AppointmentsController } from './appointments.controller.js';
 import { AppointmentsRepo } from './data/appointments.repo.js';
+import { BookingHoldsRepo } from './data/booking-holds.repo.js';
 import { AppointmentConflictGuard } from './application/appointment-conflict-guard.js';
 import { AppointmentTransitioner } from './application/appointment-transitioner.js';
 import { ListAppointments } from './application/list-appointments.js';
@@ -35,6 +36,7 @@ import { CancelAppointment } from './application/cancel-appointment.js';
   controllers: [AppointmentsController],
   providers: [
     AppointmentsRepo,
+    BookingHoldsRepo,
     AppointmentConflictGuard,
     AppointmentTransitioner,
     ListAppointments,
@@ -47,6 +49,6 @@ import { CancelAppointment } from './application/cancel-appointment.js';
     MarkAppointmentNoShow,
     CancelAppointment,
   ],
-  exports: [AppointmentsRepo],
+  exports: [AppointmentsRepo, BookingHoldsRepo, AppointmentConflictGuard],
 })
 export class AppointmentsModule {}

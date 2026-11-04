@@ -48,3 +48,31 @@ export function dayBoundsUtc(
     to: startOfLocalDay(nextDate, timeZone),
   };
 }
+
+/** The UTC instant of `HH:MM` on local calendar day `date` in `timeZone`. */
+export function localTimeToUtc(
+  date: string,
+  hhmm: string,
+  timeZone: string,
+): Date {
+  const [h, m] = hhmm.split(':').map(Number);
+  const midnight = startOfLocalDay(date, timeZone);
+  return new Date(midnight.getTime() + (h * 60 + m) * 60000);
+}
+
+/** 0 = Sunday … 6 = Saturday for a YYYY-MM-DD calendar date. */
+export function weekdayOf(date: string): number {
+  return new Date(`${date}T00:00:00Z`).getUTCDay();
+}
+
+/** Every YYYY-MM-DD from `from` to `to` inclusive. */
+export function eachDate(from: string, to: string): string[] {
+  const out: string[] = [];
+  const cursor = new Date(`${from}T00:00:00Z`);
+  const end = new Date(`${to}T00:00:00Z`);
+  while (cursor <= end) {
+    out.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return out;
+}
