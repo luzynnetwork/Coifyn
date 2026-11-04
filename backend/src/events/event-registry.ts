@@ -112,6 +112,84 @@ export const EVENT_REGISTRY = {
     customerId: z.string(),
     spendMinor: z.number(),
   }),
+
+  // ── availability ──────────────────────────────────────────────────────────
+  ShiftPublished: z.object({ shiftId: z.string(), stylistId: z.string() }),
+  ShiftTemplateApplied: z.object({ templateId: z.string(), created: z.number() }),
+  TimeOffRequested: z.object({ timeOffId: z.string(), stylistId: z.string() }),
+  TimeOffApproved: z.object({ timeOffId: z.string(), stylistId: z.string() }),
+  TimeOffDenied: z.object({ timeOffId: z.string(), stylistId: z.string() }),
+
+  // ── appointments (full) ───────────────────────────────────────────────────
+  AppointmentRescheduled: appointmentPayload,
+  AppointmentStylistReassigned: appointmentPayload.extend({
+    originalStylistId: z.string(),
+  }),
+  BookingRequestSubmitted: z.object({
+    requestId: z.string(),
+    branchId: z.string(),
+  }),
+  BookingRequestDecided: z.object({
+    requestId: z.string(),
+    status: z.string(),
+  }),
+
+  // ── queue / stylist presence ──────────────────────────────────────────────
+  QueueStylistSwitched: z.object({ entryId: z.string(), branchId: z.string() }),
+
+  // ── disruptions ───────────────────────────────────────────────────────────
+  DisruptionDeclared: z.object({
+    disruptionId: z.string(),
+    stylistId: z.string(),
+    kind: z.string(),
+  }),
+  DisruptionOfferSent: z.object({
+    disruptionId: z.string(),
+    offerId: z.string(),
+  }),
+  DisruptionOfferResolved: z.object({
+    offerId: z.string(),
+    choice: z.string(),
+  }),
+  DisruptionOfferEscalated: z.object({ offerId: z.string() }),
+
+  // ── cut records ───────────────────────────────────────────────────────────
+  CutRecordCreated: z.object({
+    cutRecordId: z.string(),
+    customerId: z.string(),
+  }),
+  CutRecordPhotoAdded: z.object({
+    cutRecordId: z.string(),
+    photoId: z.string(),
+  }),
+  FormulaEntryCreated: z.object({
+    formulaId: z.string(),
+    customerId: z.string(),
+  }),
+
+  // ── customers (full record) ───────────────────────────────────────────────
+  CustomerPreferencesUpdated: z.object({ customerId: z.string() }),
+  CustomerConsentChanged: z.object({
+    customerId: z.string(),
+    channel: z.string(),
+  }),
+  CustomersMerged: z.object({ survivorId: z.string(), mergedId: z.string() }),
+
+  // ── loyalty ───────────────────────────────────────────────────────────────
+  LoyaltyPointsEarned: z.object({
+    customerId: z.string(),
+    points: z.number(),
+  }),
+  LoyaltyPointsAdjusted: z.object({
+    customerId: z.string(),
+    delta: z.number(),
+  }),
+  LoyaltyTierChanged: z.object({ customerId: z.string(), tier: z.string() }),
+
+  // ── notification dispatch ─────────────────────────────────────────────────
+  NotificationQueued: z.object({ templateKey: z.string() }),
+  NotificationDelivered: z.object({ deliveryId: z.string() }),
+  NotificationFailed: z.object({ deliveryId: z.string() }),
 } as const satisfies Record<string, z.ZodTypeAny>;
 
 export type EventType = keyof typeof EVENT_REGISTRY;

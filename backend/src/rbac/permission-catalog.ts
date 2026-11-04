@@ -75,6 +75,18 @@ export const PERMISSION_CATALOG: readonly PermissionDef[] = [
   def('customer:view', 'View customer records', true),
   def('customer:manage', 'Create and edit customer records', true),
 
+  // Phase 2 — scheduling, disruptions, cut records, loyalty
+  def('roster:view', 'View stylist rosters, shifts and time off', true),
+  def('roster:manage', 'Create shifts and templates; approve time off', true),
+  def('timeoff:request', 'Request time off', true),
+  def('disruption:manage', 'Declare running-late/absence and resolve offers', true),
+  def('cutrecord:view', 'View customer cut records and formulas', true),
+  def('cutrecord:manage', 'Record cuts, formulas and photos', true),
+  def('loyalty:view', 'View customer loyalty balances', true),
+  def('loyalty:adjust', 'Manually adjust loyalty points (audited)'),
+  def('dashboard:view', 'View the salon dashboard', true),
+  def('notification:manage', 'Manage notification templates and deliveries'),
+
   // Reporting & audit
   def('report:view', 'View salon reports', true),
   def('auditlog:view', 'View the salon audit log'),
