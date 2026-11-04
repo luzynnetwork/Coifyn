@@ -20,6 +20,7 @@ import { CustomersModule } from './customers/customers.module.js';
 import { QueueModule } from './queue/queue.module.js';
 import { AppointmentsModule } from './appointments/appointments.module.js';
 import { AvailabilityModule } from './availability/availability.module.js';
+import { DisruptionsModule } from './disruptions/disruptions.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { ReportsModule } from './reports/reports.module.js';
@@ -72,6 +73,8 @@ import { ProvidersModule } from './providers/providers.module.js';
     CustomersModule,
     QueueModule,
     AppointmentsModule,
+    AvailabilityModule,
+    DisruptionsModule,
     TicketsModule,
     PaymentsModule,
     ReportsModule,
