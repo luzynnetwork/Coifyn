@@ -1,7 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src"
+    "rootDir": "./src",
+    // `nest build` deletes dist/ (deleteOutDir) but an incremental cache
+    // survives it, so tsc concludes "nothing changed" and emits nothing.
+    // Production builds must always emit.
+    "incremental": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
