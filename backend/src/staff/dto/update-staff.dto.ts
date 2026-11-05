@@ -14,7 +14,7 @@ export class UpdateStaffDto {
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(50)
-  @IsUUID('4', { each: true })
+  @IsUUID('all', { each: true })
   branchIds?: string[];
 
   @IsOptional()

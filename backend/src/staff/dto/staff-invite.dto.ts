@@ -14,6 +14,6 @@ export class CreateStaffInviteDto {
 
   @IsArray()
   @ArrayMaxSize(50)
-  @IsUUID('4', { each: true })
+  @IsUUID('all', { each: true })
   branchIds!: string[];
 }
