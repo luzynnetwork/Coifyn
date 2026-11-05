@@ -35,18 +35,18 @@ export class DashboardRepo {
           filter (where status not in ('cancelled', 'no_show')), 0)::float8 as booked_minutes
       from appointment
       where salon_id = ${salonId} and branch_id = ${branchId}
-        and deleted_at is null and start_at >= ${r.from} and start_at < ${r.to}`);
+        and deleted_at is null and start_at >= ${r.from.toISOString()}::timestamptz and start_at < ${r.to.toISOString()}::timestamptz`);
 
     const [shift] = await db.execute<{ rostered: number }>(sql`
       select coalesce(sum(extract(epoch from (end_at - start_at)) / 60), 0)::float8 as rostered
       from stylist_shift
       where salon_id = ${salonId} and branch_id = ${branchId}
-        and deleted_at is null and start_at >= ${r.from} and start_at < ${r.to}`);
+        and deleted_at is null and start_at >= ${r.from.toISOString()}::timestamptz and start_at < ${r.to.toISOString()}::timestamptz`);
 
     const [queue] = await db.execute<{ walk_ins: number }>(sql`
       select count(*)::int as walk_ins from queue_entry
       where salon_id = ${salonId} and branch_id = ${branchId}
-        and deleted_at is null and joined_at >= ${r.from} and joined_at < ${r.to}`);
+        and deleted_at is null and joined_at >= ${r.from.toISOString()}::timestamptz and joined_at < ${r.to.toISOString()}::timestamptz`);
 
     const [rebook] = await db.execute<{ customers: number; rebooked: number }>(sql`
       select
@@ -61,7 +61,7 @@ export class DashboardRepo {
       where a.salon_id = ${salonId} and a.branch_id = ${branchId}
         and a.deleted_at is null and a.status = 'completed'
         and a.customer_id is not null
-        and a.start_at >= ${r.from} and a.start_at < ${r.to}`);
+        and a.start_at >= ${r.from.toISOString()}::timestamptz and a.start_at < ${r.to.toISOString()}::timestamptz`);
 
     return {
       bookings: appt?.bookings ?? 0,
@@ -83,7 +83,7 @@ export class DashboardRepo {
       from appointment
       where salon_id = ${salonId} and branch_id = ${branchId} and deleted_at is null
         and status not in ('cancelled', 'no_show')
-        and start_at >= ${r.from} and start_at < ${r.to}
+        and start_at >= ${r.from.toISOString()}::timestamptz and start_at < ${r.to.toISOString()}::timestamptz
       group by stylist_id`);
   }
 
@@ -93,7 +93,7 @@ export class DashboardRepo {
              coalesce(sum(extract(epoch from (end_at - start_at)) / 60), 0)::float8 as minutes
       from stylist_shift
       where salon_id = ${salonId} and branch_id = ${branchId} and deleted_at is null
-        and start_at >= ${r.from} and start_at < ${r.to}
+        and start_at >= ${r.from.toISOString()}::timestamptz and start_at < ${r.to.toISOString()}::timestamptz
       group by stylist_id`);
   }
 

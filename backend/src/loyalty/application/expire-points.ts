@@ -28,7 +28,7 @@ export class ExpirePoints {
           from loyalty_account a
           where a.salon_id = ${rule.salonId} and a.points_balance > 0
             and coalesce((select max(l.created_at) from loyalty_ledger l
-                          where l.customer_id = a.customer_id), a.created_at) < ${cutoff}`);
+                          where l.customer_id = a.customer_id), a.created_at) < ${cutoff.toISOString()}::timestamptz`);
         for (const row of idle) {
           await this.poster.post({
             salonId: rule.salonId,
