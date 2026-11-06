@@ -6,7 +6,7 @@ import { DatabaseService } from '../../persistence/database.service.js';
 import { Authorize } from '../../rbac/application/authorize.js';
 import { ResolveCurrentSalon } from '../../rbac/application/resolve-current-salon.js';
 import { BranchesRepo } from '../data/branches.repo.js';
-import type { SetBranchHoursDto, UpdateBranchDto } from '../dto/branch.dto.js';
+import type { UpdateBranchDto } from '../dto/branch.dto.js';
 
 @Injectable()
 export class UpdateBranch {
@@ -25,10 +25,6 @@ export class UpdateBranch {
       ...(dto.address !== undefined && { address: dto.address }),
       ...(dto.isActive !== undefined && { isActive: dto.isActive }),
     });
-  }
-
-  async setHours(user: AuthUser, branchId: string, dto: SetBranchHoursDto) {
-    return this.mutate(user, branchId, { hours: dto.hours });
   }
 
   private async mutate(

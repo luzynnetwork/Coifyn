@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* The package is consumed through a node_modules symlink, which Tailwind's
+   automatic detection skips; name its sources so the shared components
+   (dialog positioning, etc.) always get their utilities. */
+@source "../";
+
 :root {
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;

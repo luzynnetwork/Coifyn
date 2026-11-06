@@ -54,4 +54,19 @@ export class UsersRepo {
       .returning();
     return row;
   }
+
+  /** Enables/disables login — used by the `staff` module's deactivate flow.
+   *  `user` carries no salon FK (Phase 1 staff belong to exactly one salon), so
+   *  disabling here is what "deactivate this staff member" means today. */
+  async setStatus(
+    id: string,
+    status: 'active' | 'disabled',
+  ): Promise<UserRow | undefined> {
+    const [row] = await this.database.db
+      .update(users)
+      .set({ status })
+      .where(eq(users.id, id))
+      .returning();
+    return row;
+  }
 }

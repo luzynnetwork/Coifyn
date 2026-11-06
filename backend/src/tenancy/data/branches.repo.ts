@@ -30,7 +30,6 @@ export class BranchesRepo {
     salonId: string;
     name: string;
     address?: unknown;
-    hours?: unknown;
   }): Promise<BranchRow> {
     const [row] = await this.database.db
       .insert(branches)
@@ -39,7 +38,6 @@ export class BranchesRepo {
         salonId: input.salonId,
         name: input.name,
         address: input.address ?? {},
-        hours: input.hours ?? {},
       })
       .returning();
     return row;
@@ -48,7 +46,7 @@ export class BranchesRepo {
   async update(
     salonId: string,
     id: string,
-    patch: Partial<Pick<BranchRow, 'name' | 'address' | 'hours' | 'isActive'>>,
+    patch: Partial<Pick<BranchRow, 'name' | 'address' | 'isActive'>>,
   ): Promise<BranchRow | undefined> {
     const [row] = await this.database.db
       .update(branches)

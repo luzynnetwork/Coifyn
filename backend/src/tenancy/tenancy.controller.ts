@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -17,11 +16,7 @@ import { CurrentUser } from '../auth/current-user.decorator.js';
 import type { AuthUser } from '../auth/auth-user.js';
 import { CreateSalonDto } from './dto/onboarding.dto.js';
 import { UpdateSalonDto } from './dto/salon.dto.js';
-import {
-  CreateBranchDto,
-  SetBranchHoursDto,
-  UpdateBranchDto,
-} from './dto/branch.dto.js';
+import { CreateBranchDto, UpdateBranchDto } from './dto/branch.dto.js';
 import { CreateChairDto, UpdateChairDto } from './dto/chair.dto.js';
 import { CreateSalon } from './application/create-salon.js';
 import { GetMySalon } from './application/get-my-salon.js';
@@ -91,15 +86,6 @@ export class TenancyController {
     @Body() dto: UpdateBranchDto,
   ) {
     return this.updateBranchUc.execute(user, id, dto);
-  }
-
-  @Put('branches/:id/hours')
-  setHours(
-    @CurrentUser() user: AuthUser,
-    @Param('id') id: string,
-    @Body() dto: SetBranchHoursDto,
-  ) {
-    return this.updateBranchUc.setHours(user, id, dto);
   }
 
   @Delete('branches/:id')

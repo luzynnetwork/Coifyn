@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { isUniqueViolation } from './unique-violation.js';
 
 interface Problem {
   type: string;
@@ -79,6 +80,15 @@ export class ProblemJsonFilter implements ExceptionFilter {
         detail:
           typeof message === 'string' ? message : (record.error as string) ??
           title,
+      };
+    }
+
+    if (isUniqueViolation(exception)) {
+      return {
+        type: 'about:blank',
+        title: 'Conflict',
+        status: HttpStatus.CONFLICT,
+        detail: 'That already exists.',
       };
     }
 

@@ -8,6 +8,7 @@ import { MembershipsRepo } from './data/memberships.repo.js';
 import { BranchMembershipsRepo } from './data/branch-memberships.repo.js';
 import { Authorize } from './application/authorize.js';
 import { ResolveCurrentSalon } from './application/resolve-current-salon.js';
+import { TenantScope } from './application/tenant-scope.js';
 import { ProvisionStandardRoles } from './application/provision-standard-roles.js';
 import { ListPermissions } from './application/list-permissions.js';
 import { ListRoles } from './application/list-roles.js';
@@ -35,6 +36,7 @@ import { EntitlementGuard } from './guards/entitlement.guard.js';
     BranchMembershipsRepo,
     Authorize,
     ResolveCurrentSalon,
+    TenantScope,
     ProvisionStandardRoles,
     ListPermissions,
     ListRoles,
@@ -49,11 +51,15 @@ import { EntitlementGuard } from './guards/entitlement.guard.js';
   exports: [
     Authorize,
     ResolveCurrentSalon,
+    TenantScope,
     ProvisionStandardRoles,
     RolesRepo,
     MembershipsRepo,
     BranchMembershipsRepo,
     EntitlementGuard,
+    AssignRole,
+    SetBranchMemberships,
+    ListMembers,
   ],
 })
 export class RbacModule {}

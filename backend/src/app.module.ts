@@ -12,6 +12,23 @@ import { AuthModule } from './auth/auth.module.js';
 import { CustomerAuthModule } from './customer-auth/customer-auth.module.js';
 import { RbacModule } from './rbac/rbac.module.js';
 import { TenancyModule } from './tenancy/tenancy.module.js';
+import { SalonSetupModule } from './salon-setup/salon-setup.module.js';
+import { ServicesModule } from './services/services.module.js';
+import { StylistsModule } from './stylists/stylists.module.js';
+import { StaffModule } from './staff/staff.module.js';
+import { CustomersModule } from './customers/customers.module.js';
+import { QueueModule } from './queue/queue.module.js';
+import { AppointmentsModule } from './appointments/appointments.module.js';
+import { AvailabilityModule } from './availability/availability.module.js';
+import { DisruptionsModule } from './disruptions/disruptions.module.js';
+import { CutRecordsModule } from './cut-records/cut-records.module.js';
+import { LoyaltyModule } from './loyalty/loyalty.module.js';
+import { ClientDashboardModule } from './client-dashboard/client-dashboard.module.js';
+import { BookingRequestsModule } from './booking-requests/booking-requests.module.js';
+import { PublicBookingModule } from './public-booking/public-booking.module.js';
+import { TicketsModule } from './tickets/tickets.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { ProvidersModule } from './providers/providers.module.js';
@@ -54,6 +71,23 @@ import { ProvidersModule } from './providers/providers.module.js';
     CustomerAuthModule,
     RbacModule,
     TenancyModule,
+    SalonSetupModule,
+    ServicesModule,
+    StylistsModule,
+    StaffModule,
+    CustomersModule,
+    QueueModule,
+    AppointmentsModule,
+    AvailabilityModule,
+    DisruptionsModule,
+    CutRecordsModule,
+    LoyaltyModule,
+    ClientDashboardModule,
+    BookingRequestsModule,
+    PublicBookingModule,
+    TicketsModule,
+    PaymentsModule,
+    ReportsModule,
     ProvidersModule,
     RealtimeModule,
     NotificationsModule,

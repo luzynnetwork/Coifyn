@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "@coifyn/ui/styles.css";
+import { Toaster } from "@coifyn/ui";
 import { Providers } from "./providers";
+import { AppShell } from "../components/AppShell";
 
 export const metadata: Metadata = {
   title: "Coifyn — Salon Console",
@@ -15,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

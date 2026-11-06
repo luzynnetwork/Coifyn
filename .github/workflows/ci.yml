@@ -77,6 +77,25 @@ jobs:
     defaults:
       run:
         working-directory: frontend
+    # The Playwright journeys drive the real API (playwright.config.ts starts
+    # backend/scripts/ui-e2e-server.mjs), which needs a superuser Postgres to
+    # create its throwaway database and restricted role.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      E2E_SUPERUSER_URL: postgres://postgres:postgres@localhost:5432/postgres
     steps:
       - uses: actions/checkout@v4
 
@@ -84,7 +103,9 @@ jobs:
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -98,6 +119,13 @@ jobs:
       # and a Playwright config land, this step fails loudly (by design — a
       # missing script is a real CI failure, not something to paper over with
       # continue-on-error) rather than being silently skipped.
+      # The API the browser journeys talk to: install and compile it.
+      - name: Install and build the API
+        working-directory: backend
+        run: |
+          npm ci
+          npm run build
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
