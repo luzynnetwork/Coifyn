@@ -30,6 +30,9 @@ export default defineConfig({
       url: "http://localhost:4000/health",
       reuseExistingServer: false,
       timeout: 120_000,
+      // Show the API's log (LOG_LEVEL=warn) in the test output, so a 500 in CI
+      // comes with its stack trace instead of only a correlation id.
+      stdout: "pipe",
       env: {
         ...(process.env as Record<string, string>),
         E2E_SUPERUSER_URL:

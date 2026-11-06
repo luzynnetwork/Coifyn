@@ -9,9 +9,13 @@ export async function signIn(page: Page, email: string, password: string) {
   await page.waitForURL("**/setup");
 }
 
-/** A day-report stat card, found by its label. */
+/** A day-report stat card, found by its label within the "Day totals" grid
+ *  (the by-stylist table below it has a "Tickets" column too). */
 export function stat(page: Page, label: string): Locator {
-  return page.getByText(label, { exact: true }).locator("xpath=../..");
+  return page
+    .getByRole("region", { name: "Day totals" })
+    .getByText(label, { exact: true })
+    .locator("xpath=../..");
 }
 
 /** Picks an option from a Radix Select by its label and the option's name. */

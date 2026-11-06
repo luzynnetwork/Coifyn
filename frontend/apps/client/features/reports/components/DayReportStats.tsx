@@ -31,7 +31,7 @@ export function DayReportStats({ report }: DayReportStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <section aria-label="Day totals" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {stats.map((stat) => (
         <Card key={stat.label}>
           <CardHeader className="pb-1">
@@ -42,6 +42,6 @@ export function DayReportStats({ report }: DayReportStatsProps) {
           <CardContent className="text-lg font-semibold">{stat.value}</CardContent>
         </Card>
       ))}
-    </div>
+    </section>
   );
 }
