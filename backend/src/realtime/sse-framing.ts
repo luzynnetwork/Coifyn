@@ -9,7 +9,9 @@
  *  that buffer by default (nginx) are told not to via X-Accel-Buffering. */
 export const SSE_HEADERS = {
   'Content-Type': 'text/event-stream',
-  'Cache-Control': 'no-cache',
+  // no-transform: stops compressing proxies (Next's `next start` gzip among
+  // them) from buffering the stream until it ends.
+  'Cache-Control': 'no-cache, no-transform',
   Connection: 'keep-alive',
   'X-Accel-Buffering': 'no',
 } as const;

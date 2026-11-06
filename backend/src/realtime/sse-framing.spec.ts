@@ -53,7 +53,7 @@ describe('formatSseComment', () => {
 describe('SSE_HEADERS', () => {
   it('sets the required event-stream headers', () => {
     expect(SSE_HEADERS['Content-Type']).toBe('text/event-stream');
-    expect(SSE_HEADERS['Cache-Control']).toBe('no-cache');
+    expect(SSE_HEADERS['Cache-Control']).toBe('no-cache, no-transform');
     expect(SSE_HEADERS.Connection).toBe('keep-alive');
     expect(SSE_HEADERS['X-Accel-Buffering']).toBe('no');
   });

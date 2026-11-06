@@ -30,9 +30,19 @@ import { RealtimeBus } from './realtime-bus.js';
  * Generic SSE stream: `GET /api/v1/realtime/stream?topic=<kind>:<id>`.
  * Supported topic kinds:
  *  - `salon:<salonId>`  — any membership in the salon is enough to subscribe.
- *  - `queue:<branchId>` / `branch:<branchId>` — resolves the branch's salon,
- *    then requires the `queue:view` permission scoped to that branch.
+ *  - branch topics (`queue:`, `branch:`, `stylist-status:`, `front-desk:`,
+ *    `disruptions:` + branchId) — resolve the branch's salon, then require the
+ *    topic's permission (BRANCH_TOPICS) scoped to that branch.
  */
+/** Branch-scoped topic kinds and the permission each needs to subscribe. */
+const BRANCH_TOPICS: Record<string, string> = {
+  queue: 'queue:view',
+  branch: 'queue:view',
+  'stylist-status': 'queue:view',
+  'front-desk': 'appointment:view',
+  disruptions: 'disruption:manage',
+};
+
 @ApiTags('realtime')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
@@ -95,7 +105,8 @@ export class RealtimeController {
       return;
     }
 
-    if (kind === 'queue' || kind === 'branch') {
+    const permission = BRANCH_TOPICS[kind];
+    if (permission) {
       const branch = await this.database.withSystem(() =>
         this.database.db.query.branches.findFirst({
           where: eq(branches.id, id),
@@ -108,13 +119,13 @@ export class RealtimeController {
         user.id,
         branch.salonId,
         () =>
-          this.authorize.can(user, 'queue:view', {
+          this.authorize.can(user, permission, {
             salonId: branch.salonId,
             branchId: branch.id,
           }),
       );
       if (!allowed) {
-        throw new ForbiddenException('Missing permission: queue:view');
+        throw new ForbiddenException(`Missing permission: ${permission}`);
       }
       return;
     }

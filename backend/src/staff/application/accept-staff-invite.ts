@@ -114,10 +114,12 @@ export class AcceptStaffInvite {
         after: { roleId: invite.roleId, branchIds },
       });
 
-      return user;
+      // Inside the scope: the session insert goes through database.db, which
+      // throws when no scope is open (that was the accept-invite 500).
+      const tokens = await this.issueSession.forNewSession(user, ctx);
+      return { user, tokens };
     });
 
-    const tokens = await this.issueSession.forNewSession(outcome, ctx);
-    return { userId: outcome.id, tokens };
+    return { userId: outcome.user.id, tokens: outcome.tokens };
   }
 }
